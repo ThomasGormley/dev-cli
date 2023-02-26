@@ -1,4 +1,4 @@
-import { existsSync } from "fs";
+import { existsSync, readFileSync } from "fs";
 import path from "path";
 import { execOut } from "./exec";
 
@@ -15,7 +15,6 @@ export function getCurrentBranch() {
 }
 
 export const BRANCH_WITH_JIRA_TICKET = /[A-Z]+-[0-9]+/;
-
 
 export const PULL_REQUEST_TEMPLATE_MD = "pull_request_template.md";
 export function findPullRequestTemplate() {
@@ -42,6 +41,24 @@ export function findPullRequestTemplate() {
   return "";
 }
 
+export function getPullRequestTemplateString() {
+  const templatePath = findPullRequestTemplate();
+
+  if (!templatePath) {
+    console.error("Could not find pull request template, using blank");
+    return "";
+  }
+
+  return readFileSync(templatePath).toString();
+}
+
 export function getGitRootDir() {
   return execOut("git rev-parse --show-toplevel");
+}
+
+export function getTicketFromBranch() {
+  const branchName = getCurrentBranch();
+  const ticket = BRANCH_WITH_JIRA_TICKET.exec(branchName)?.[0];
+
+  return ticket;
 }

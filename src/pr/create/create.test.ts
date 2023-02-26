@@ -1,6 +1,6 @@
 import { describe, it, expect, vi } from "vitest";
-import * as gitMock from "../lib/git";
-import * as execMock from "../lib/exec";
+import * as gitMock from "../../lib/git";
+import * as execMock from "../../lib/exec";
 import { createCommand } from "./create";
 describe("dev pr create", () => {
   it("should exit if directory is not a git repository", () => {
