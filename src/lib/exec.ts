@@ -9,5 +9,5 @@ export function execOut(command: string) {
 }
 
 export function execTty(command: string) {
-  return execSync(command, { stdio: "inherit", shell: "true" });
+  return execSync(command, { stdio: "inherit" });
 }
