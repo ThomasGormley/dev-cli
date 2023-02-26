@@ -8,18 +8,24 @@
     "dev": "./dist/index.js"
   },
   "scripts": {
+    "typecheck": "tsc",
+    "lint": "eslint",
+    "dev": "tsup --watch",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "cmd-ts": "^0.12.1"
+    "cmd-ts": "^0.12.1",
+    "prompts": "^2.4.2"
   },
   "devDependencies": {
     "@types/node": "^18.14.1",
+    "@types/prompts": "^2.4.2",
     "@typescript-eslint/eslint-plugin": "^5.53.0",
     "@typescript-eslint/parser": "^5.53.0",
     "eslint": "^8.34.0",
+    "tsup": "^6.6.3",
     "typescript": "^4.9.5"
   }
 }
