@@ -10,13 +10,11 @@ import {
   getTicketFromBranch,
   isPwdGitRepo,
 } from "../../lib/git";
+import { Output } from "../../types/cmd-ts";
+import { createArgs } from "./create";
 import { promptTemplateOrBlank, promptTitle } from "./prompts";
 
-type CreateArgs = {
-  title: string | undefined;
-  body: string | undefined;
-};
-
+type CreateArgs = Output<typeof createArgs>;
 export async function createHandler({ title, body }: CreateArgs) {
   if (!isPwdGitRepo()) {
     process.exit(1);
