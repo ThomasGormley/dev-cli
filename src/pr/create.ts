@@ -1,4 +1,4 @@
-import { boolean, command, flag, option, optional, string } from "cmd-ts";
+import { command, option, optional, string } from "cmd-ts";
 import { readFileSync } from "fs";
 import prompts from "prompts";
 import { execTty } from "../lib/exec";
@@ -40,7 +40,7 @@ export const createCommand = command({
     if (!body) {
       body = await handleBody();
     }
-    console.log(body);
+
     execTty(`gh pr create --title ${title} --body '${body}'`);
   },
 });
