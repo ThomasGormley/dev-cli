@@ -87,18 +87,22 @@ async function handleBody({ useTemplate }: { useTemplate: boolean }) {
   }
 }
 
-const firstupJiraLinkRegex =
-  /https:\/\/firstup-io.atlassian.net\/browse\/[A-Z]+-/;
 async function promptScChanges() {
+  const firstupJiraLinkRegex =
+    /https:\/\/firstup-io.atlassian.net\/browse\/[A-Z]+-/;
   const repoTemplatePath = findPullRequestTemplate();
   const ticketString = getTicketFromBranch();
   const template = readFileSync(repoTemplatePath).toString();
-  const templateWithTicket = template.replace(
-    firstupJiraLinkRegex,
-    `https://firstup-io.atlassian.net/browse/${ticketString}`,
-  );
 
-  return templateWithTicket;
+  if (firstupJiraLinkRegex.test(template)) {
+    const templateWithTicket = template.replace(
+      firstupJiraLinkRegex,
+      `https://firstup-io.atlassian.net/browse/${ticketString}`,
+    );
+    return templateWithTicket;
+  }
+
+  return template;
 }
 
 function getTicketFromBranch() {
