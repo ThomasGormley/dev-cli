@@ -14,6 +14,12 @@ export const createArgs = {
     short: "b",
     description: "Pull request changes",
   }),
+  draft: option({
+    type: optional(string),
+    long: "draft",
+    short: "d",
+    description: "Mark pull request as a draft",
+  }),
 };
 
 export const createCommand = command({

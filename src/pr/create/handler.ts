@@ -13,7 +13,7 @@ import {
 import { promptTemplateOrBlank, promptTitle } from "./prompts";
 import { CreateArgs } from "./types";
 
-export async function createHandler({ title, body }: CreateArgs) {
+export async function createHandler({ title, body, draft }: CreateArgs) {
   if (!isPwdGitRepo()) {
     process.exit(1);
   }
@@ -26,7 +26,16 @@ export async function createHandler({ title, body }: CreateArgs) {
     body = await handleBody();
   }
 
-  execTty(`gh pr create --title ${title} --body '${body}'`);
+  execTty(
+    [
+      "gh pr create",
+      `--title "${title}"`,
+      `--body "${body}"`,
+      draft && "--draft",
+    ]
+      .filter(Boolean)
+      .join(" "),
+  );
 }
 
 async function handleTitle() {

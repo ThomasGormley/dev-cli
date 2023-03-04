@@ -3,6 +3,19 @@ import * as gitMock from "../../lib/git";
 import * as execMock from "../../lib/exec";
 import { createCommand } from "./create";
 import prompts from "prompts";
+import { CreateArgs } from "./types";
+
+function generateArgs({
+  title = undefined,
+  body = undefined,
+  draft = undefined,
+}: Partial<CreateArgs> = {}) {
+  return {
+    title: title,
+    body: body,
+    draft: draft,
+  } satisfies CreateArgs;
+}
 
 describe("dev pr create", () => {
   beforeEach(() => {
@@ -22,7 +35,7 @@ describe("dev pr create", () => {
       .spyOn(process, "exit")
       .mockImplementationOnce(vi.fn());
 
-    createCommand.handler({ title: undefined, body: undefined });
+    createCommand.handler(generateArgs());
     expect(processSpy).toBeCalledTimes(1);
     expect(processSpy).toHaveBeenCalledWith(1);
   });
@@ -31,14 +44,17 @@ describe("dev pr create", () => {
     const execTtySpy = vi
       .spyOn(execMock, "execTty")
       .mockImplementationOnce(() => vi.fn as unknown as Buffer);
-    const testArgs = { title: "test title", body: "test body" };
+    const testArgs = generateArgs({
+      title: "test title",
+      body: "test body",
+    });
     createCommand.handler(testArgs);
 
     expect(execTtySpy).toHaveBeenCalledWith(
-      expect.stringMatching(`--title ${testArgs.title}`),
+      expect.stringMatching(`--title "${testArgs.title}"`),
     );
     expect(execTtySpy).toHaveBeenCalledWith(
-      expect.stringMatching(`--body '${testArgs.body}'`),
+      expect.stringMatching(`--body "${testArgs.body}"`),
     );
   });
 
@@ -47,7 +63,7 @@ describe("dev pr create", () => {
     const execTtySpy = vi
       .spyOn(execMock, "execTty")
       .mockImplementationOnce(() => vi.fn as unknown as Buffer);
-    const testArgs = { title: undefined, body: "test body" };
+    const testArgs = generateArgs({ body: "test body" });
     createCommand.handler(testArgs);
 
     expect(execTtySpy).toHaveBeenCalledOnce();
