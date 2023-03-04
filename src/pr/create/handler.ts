@@ -61,7 +61,7 @@ async function handleHasTemplate() {
 }
 
 async function handleFirstupTemplate() {
-  const ticketString = getTicketFromBranch();
+  const { ticket: ticketString } = getTicketFromBranch();
   const template = getPullRequestTemplateString();
 
   if (FIRSTUP_JIRA_LINK_REGEX.test(template) && ticketString) {

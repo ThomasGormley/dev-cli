@@ -56,9 +56,8 @@ export function getGitRootDir() {
   return execOut("git rev-parse --show-toplevel");
 }
 
-export function getTicketFromBranch() {
-  const branchName = getCurrentBranch();
-  const ticket = BRANCH_WITH_JIRA_TICKET.exec(branchName)?.[0];
-
-  return ticket;
+export function getTicketFromBranch(branchName = getCurrentBranch()) {
+  const ticket = branchName.match(branchName)?.[0] ?? "";
+  const remaining = branchName.replace(ticket, "");
+  return { ticket, remaining };
 }

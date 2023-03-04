@@ -2,13 +2,13 @@ import prompts from "prompts";
 import { getTicketFromBranch, PULL_REQUEST_TEMPLATE_MD } from "../../lib/git";
 
 export async function promptTitle() {
-  const ticket = getTicketFromBranch();
-
+  const { ticket, remaining } = getTicketFromBranch();
+  const branchNameWithoutTicket = remaining.replaceAll("-", " ");
   const response = await prompts({
     name: "title",
     type: "text",
     message: "Title",
-    initial: ticket ? `[${ticket}] ` : undefined,
+    initial: ticket ? `[${ticket}] ${branchNameWithoutTicket}` : undefined,
   });
 
   return response.title as string;
