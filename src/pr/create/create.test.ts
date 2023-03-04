@@ -49,14 +49,17 @@ describe("dev pr create", () => {
       body: "test body",
       draft: true,
     });
+    const expectedArgStrings: Record<keyof CreateArgs, string> = {
+      title: `--title "${testArgs.title}"`,
+      body: `--body "${testArgs.body}"`,
+      draft: "--draft",
+    };
+
     createCommand.handler(testArgs);
 
-    expect(execTtySpy).toHaveBeenCalledWith(
-      expect.stringMatching(`--title "${testArgs.title}"`),
-    );
-    expect(execTtySpy).toHaveBeenCalledWith(
-      expect.stringMatching(`--body "${testArgs.body}"`),
-    );
+    for (const expected of Object.values(expectedArgStrings)) {
+      expect(execTtySpy).toHaveBeenCalledWith(expect.stringMatching(expected));
+    }
   });
 
   it.skip("should use ticket in branch name as initial title value", () => {
