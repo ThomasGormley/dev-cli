@@ -1,7 +1,6 @@
 import { describe, it, expect, vi, beforeEach, SpyInstance } from "vitest";
 import * as git from "../../../lib/git";
 import * as exec from "../../../lib/exec";
-import * as firstup from "../../../lib/firstup";
 import { createCommand } from "../create";
 import prompts from "prompts";
 import { CreateArgs } from "../types";
