@@ -1,6 +1,7 @@
 import { describe, it, expect, vi, beforeEach, SpyInstance } from "vitest";
 import * as git from "../../../lib/git";
 import * as exec from "../../../lib/exec";
+import * as firstup from "../../../lib/firstup";
 import { createCommand } from "../create";
 import prompts from "prompts";
 import { CreateArgs } from "../types";
@@ -81,6 +82,46 @@ describe("dev pr create", () => {
           testGetTicketFromBranchReturn.ticket
         }] ${testGetTicketFromBranchReturn.remaining.replaceAll("-", " ")}"`,
       ),
+    );
+  });
+
+  it("should offer and use repo `pull_request_template.md` as the body if one exists and is selected", async () => {
+    prompts.inject(["template"]);
+    const testPullRequestTemplate = "test pull request template";
+    vi.spyOn(git, "findPullRequestTemplate").mockReturnValue(
+      "pull_request_template.md",
+    );
+    vi.spyOn(git, "getPullRequestTemplateString").mockReturnValueOnce(
+      testPullRequestTemplate,
+    );
+
+    const testArgs = generateArgs({ title: "title" });
+
+    await createCommand.handler(testArgs);
+
+    expect(execTtySpy).toHaveBeenCalledOnce();
+    expect(execTtySpy).toHaveBeenCalledWith(
+      expect.stringContaining(`--body "${testPullRequestTemplate}"`),
+    );
+  });
+
+  it("should set empty body if blank option is selected", async () => {
+    prompts.inject(["blank"]);
+    const testPullRequestTemplate = "test pull request template";
+    vi.spyOn(git, "findPullRequestTemplate").mockReturnValue(
+      "pull_request_template.md",
+    );
+    vi.spyOn(git, "getPullRequestTemplateString").mockReturnValueOnce(
+      testPullRequestTemplate,
+    );
+
+    const testArgs = generateArgs({ title: "title" });
+
+    await createCommand.handler(testArgs);
+
+    expect(execTtySpy).toHaveBeenCalledOnce();
+    expect(execTtySpy).toHaveBeenCalledWith(
+      expect.stringContaining(`--body ""`),
     );
   });
 });
