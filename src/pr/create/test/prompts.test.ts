@@ -1,7 +1,7 @@
 import prompts from "prompts";
 import { describe, expect, it, vi } from "vitest";
-import * as gitMock from "../../lib/git";
-import { promptTitle } from "./prompts";
+import * as gitMock from "../../../lib/git";
+import { promptTitle } from "../prompts";
 
 describe("promptTitle", () => {
   it("should fill initial field with ticket number and title", async () => {

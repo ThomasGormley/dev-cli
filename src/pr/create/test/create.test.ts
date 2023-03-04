@@ -1,9 +1,9 @@
 import { describe, it, expect, vi, beforeEach, SpyInstance } from "vitest";
-import * as git from "../../lib/git";
-import * as exec from "../../lib/exec";
-import { createCommand } from "./create";
+import * as git from "../../../lib/git";
+import * as exec from "../../../lib/exec";
+import { createCommand } from "../create";
 import prompts from "prompts";
-import { CreateArgs } from "./types";
+import { CreateArgs } from "../types";
 
 function generateArgs({
   title = undefined,
