@@ -8,7 +8,7 @@ import { CreateArgs } from "./types";
 function generateArgs({
   title = undefined,
   body = undefined,
-  draft = undefined,
+  draft = false,
 }: Partial<CreateArgs> = {}) {
   return {
     title: title,
@@ -40,13 +40,14 @@ describe("dev pr create", () => {
     expect(processSpy).toHaveBeenCalledWith(1);
   });
 
-  it("should forward title & body to `gh pr create` when args provided", () => {
+  it("should forward all args to `gh pr create` when provided", () => {
     const execTtySpy = vi
       .spyOn(execMock, "execTty")
       .mockImplementationOnce(() => vi.fn as unknown as Buffer);
     const testArgs = generateArgs({
       title: "test title",
       body: "test body",
+      draft: true,
     });
     createCommand.handler(testArgs);
 

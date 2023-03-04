@@ -1,4 +1,4 @@
-import { command, option, optional, string } from "cmd-ts";
+import { boolean, command, flag, option, optional, string } from "cmd-ts";
 import { createHandler } from "./handler";
 
 export const createArgs = {
@@ -14,11 +14,10 @@ export const createArgs = {
     short: "b",
     description: "Pull request changes",
   }),
-  draft: option({
-    type: optional(string),
+  draft: flag({
+    type: boolean,
     long: "draft",
     short: "d",
-    description: "Mark pull request as a draft",
   }),
 };
 
