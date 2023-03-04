@@ -8,7 +8,7 @@ const cliCommands = subcommands({
   },
   name: "dev",
   description: "Personal development CLI with utilities",
-  version: "0.0.1"
+  version: "0.0.1",
 });
 
 const cli = binary(cliCommands);
