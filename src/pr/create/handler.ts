@@ -6,6 +6,7 @@ import {
 } from "../../lib/firstup";
 import {
   findPullRequestTemplate,
+  getCurrentBranch,
   getPullRequestTemplateString,
   getTicketFromBranch,
   isPwdGitRepo,
@@ -26,6 +27,9 @@ export async function createHandler({ title, body, draft }: CreateArgs) {
     body = await handleBody();
   }
 
+  console.log({ title });
+  const branch = getCurrentBranch();
+  console.log(branch);
   execTty(
     [
       "gh pr create",

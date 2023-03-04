@@ -1,5 +1,6 @@
-import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
+import { describe, it, expect, vi, beforeEach, SpyInstance } from "vitest";
 import * as gitMock from "../../lib/git";
+import * as testMock from './test'
 import * as execMock from "../../lib/exec";
 import { createCommand } from "./create";
 import prompts from "prompts";
@@ -18,32 +19,28 @@ function generateArgs({
 }
 
 describe("dev pr create", () => {
+  let execTtySpy: SpyInstance<[command: string], Buffer> | undefined =
+    undefined;
   beforeEach(() => {
-    vi.spyOn(gitMock, "isPwdGitRepo").mockImplementationOnce(() => true);
-    vi.spyOn(gitMock, "getCurrentBranch").mockImplementation(
-      () => "EE-123456-testing-branch-feature",
-    );
+    vi.spyOn(gitMock, "isPwdGitRepo").mockImplementation(() => true);
+    execTtySpy = vi
+      .spyOn(execMock, "execTty")
+      .mockImplementationOnce(() => vi.fn as unknown as Buffer);
   });
 
-  afterEach(() => {
-    vi.clearAllMocks();
-  });
-
-  it("should exit if directory is not a git repository", () => {
-    vi.spyOn(gitMock, "isPwdGitRepo").mockImplementationOnce(() => false);
+  it("should exit if directory is not a git repository", async () => {
+    prompts.inject([undefined, undefined]);
+    vi.spyOn(gitMock, "isPwdGitRepo").mockImplementation(() => false);
     const processSpy = vi
       .spyOn(process, "exit")
       .mockImplementationOnce(vi.fn());
 
-    createCommand.handler(generateArgs());
+    await createCommand.handler(generateArgs());
     expect(processSpy).toBeCalledTimes(1);
     expect(processSpy).toHaveBeenCalledWith(1);
   });
 
   it("should forward all args to `gh pr create` when provided", () => {
-    const execTtySpy = vi
-      .spyOn(execMock, "execTty")
-      .mockImplementationOnce(() => vi.fn as unknown as Buffer);
     const testArgs = generateArgs({
       title: "test title",
       body: "test body",
@@ -62,14 +59,24 @@ describe("dev pr create", () => {
     }
   });
 
-  it.skip("should use ticket in branch name as initial title value", () => {
-    prompts.inject(["EE-123456"]);
-    const execTtySpy = vi
-      .spyOn(execMock, "execTty")
-      .mockImplementationOnce(() => vi.fn as unknown as Buffer);
+  it.only("should use ticket in branch name as initial title value", async () => {
+    prompts.inject([]);
+    const branchSpy = vi
+      .spyOn(gitMock, "getCurrentBranch")
+      .mockImplementation(() => "impl-test");
+
+    console.log({
+      branchSpy: branchSpy.getMockName(),
+      impl: branchSpy.getMockImplementation()?.toString(),
+    });
+
     const testArgs = generateArgs({ body: "test body" });
-    createCommand.handler(testArgs);
+
+    await createCommand.handler(testArgs);
 
     expect(execTtySpy).toHaveBeenCalledOnce();
+    expect(execTtySpy).toHaveBeenCalledWith(
+      expect.stringContaining("EE-123456"),
+    );
   });
 });
