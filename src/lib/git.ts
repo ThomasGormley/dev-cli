@@ -2,6 +2,9 @@ import { existsSync, readFileSync } from "fs";
 import path from "path";
 import { execOut } from "./exec";
 
+export const BRANCH_WITH_JIRA_TICKET = /[A-Z]+-[0-9]+/;
+export const PULL_REQUEST_TEMPLATE_MD = "pull_request_template.md";
+
 export function isPwdGitRepo() {
   try {
     return Boolean(execOut("git rev-parse --is-inside-work-tree"));
@@ -14,9 +17,6 @@ export function getCurrentBranch() {
   return execOut("git branch --show-current");
 }
 
-export const BRANCH_WITH_JIRA_TICKET = /[A-Z]+-[0-9]+/;
-
-export const PULL_REQUEST_TEMPLATE_MD = "pull_request_template.md";
 export function findPullRequestTemplate() {
   const templateLocations = [
     "./",
