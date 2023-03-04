@@ -1,7 +1,6 @@
 import { describe, it, expect, vi, beforeEach, SpyInstance } from "vitest";
-import * as gitMock from "../../lib/git";
-import * as testMock from './test'
-import * as execMock from "../../lib/exec";
+import * as git from "../../lib/git";
+import * as exec from "../../lib/exec";
 import { createCommand } from "./create";
 import prompts from "prompts";
 import { CreateArgs } from "./types";
@@ -18,19 +17,27 @@ function generateArgs({
   } satisfies CreateArgs;
 }
 
+const testGetTicketFromBranchReturn = {
+  ticket: "EE-123456",
+  remaining: "testing-ticket-title",
+};
+
 describe("dev pr create", () => {
   let execTtySpy: SpyInstance<[command: string], Buffer> | undefined =
     undefined;
   beforeEach(() => {
-    vi.spyOn(gitMock, "isPwdGitRepo").mockImplementation(() => true);
+    vi.spyOn(git, "isPwdGitRepo").mockImplementation(() => true);
+    vi.spyOn(git, "getTicketFromBranch").mockReturnValue(
+      testGetTicketFromBranchReturn,
+    );
     execTtySpy = vi
-      .spyOn(execMock, "execTty")
+      .spyOn(exec, "execTty")
       .mockImplementationOnce(() => vi.fn as unknown as Buffer);
   });
 
   it("should exit if directory is not a git repository", async () => {
     prompts.inject([undefined, undefined]);
-    vi.spyOn(gitMock, "isPwdGitRepo").mockImplementation(() => false);
+    vi.spyOn(git, "isPwdGitRepo").mockImplementation(() => false);
     const processSpy = vi
       .spyOn(process, "exit")
       .mockImplementationOnce(vi.fn());
@@ -46,6 +53,7 @@ describe("dev pr create", () => {
       body: "test body",
       draft: true,
     });
+
     const expectedArgStrings: Record<keyof CreateArgs, string> = {
       title: `--title "${testArgs.title}"`,
       body: `--body "${testArgs.body}"`,
@@ -59,16 +67,8 @@ describe("dev pr create", () => {
     }
   });
 
-  it.only("should use ticket in branch name as initial title value", async () => {
+  it("should use ticket info in branch name as initial title value", async () => {
     prompts.inject([]);
-    const branchSpy = vi
-      .spyOn(gitMock, "getCurrentBranch")
-      .mockImplementation(() => "impl-test");
-
-    console.log({
-      branchSpy: branchSpy.getMockName(),
-      impl: branchSpy.getMockImplementation()?.toString(),
-    });
 
     const testArgs = generateArgs({ body: "test body" });
 
@@ -76,7 +76,11 @@ describe("dev pr create", () => {
 
     expect(execTtySpy).toHaveBeenCalledOnce();
     expect(execTtySpy).toHaveBeenCalledWith(
-      expect.stringContaining("EE-123456"),
+      expect.stringContaining(
+        `--title "[${
+          testGetTicketFromBranchReturn.ticket
+        }] ${testGetTicketFromBranchReturn.remaining.replaceAll("-", " ")}"`,
+      ),
     );
   });
 });
