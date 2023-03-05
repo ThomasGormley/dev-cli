@@ -14,7 +14,9 @@
     "prettier": "prettier --check src",
     "prettier:write": "prettier --write src",
     "dev": "tsup --watch",
-    "test": "vitest"
+    "test": "vitest",
+    "checks": "npm run prettier && npm run lint && npm run typecheck && npm run test",
+    "release": ""
   },
   "author": "",
   "license": "ISC",
