@@ -17,15 +17,15 @@ export function getCurrentBranch() {
   return execOut("git branch --show-current");
 }
 
+const GIT_PULL_REQUEST_TEMPLATE_LOCATIONS = [
+  "./",
+  "./.github/PULL_REQUEST_TEMPLATE/",
+  "./.github/",
+  "./docs/",
+];
 export function findPullRequestTemplate() {
-  const templateLocations = [
-    "./",
-    "./.github/PULL_REQUEST_TEMPLATE/",
-    "./.github/",
-    "./docs/",
-  ];
   const root = getGitRootDir();
-  const paths = templateLocations.map((dir) =>
+  const paths = GIT_PULL_REQUEST_TEMPLATE_LOCATIONS.map((dir) =>
     path.join(root, dir, PULL_REQUEST_TEMPLATE_MD),
   );
 
