@@ -1,5 +1,5 @@
 {
-  "name": "dev-cli",
+  "name": "@thomas/dev-cli",
   "version": "0.0.2",
   "description": "",
   "type": "module",
