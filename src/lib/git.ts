@@ -20,7 +20,8 @@ export function getCurrentBranch() {
 export function findPullRequestTemplate() {
   const templateLocations = [
     "./",
-    "./github/PULL_REQUEST_TEMPLATE/",
+    "./.github/PULL_REQUEST_TEMPLATE/",
+    "./.github/",
     "./docs/",
   ];
   const root = getGitRootDir();
