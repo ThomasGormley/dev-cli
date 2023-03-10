@@ -19,7 +19,7 @@ function generateArgs({
 
 const testGetTicketFromBranchReturn = {
   ticket: "EE-123456",
-  remaining: "testing-ticket-title",
+  remaining: "-testing-ticket-title",
 };
 
 describe("dev pr create", () => {
@@ -77,9 +77,7 @@ describe("dev pr create", () => {
     expect(execTtySpy).toHaveBeenCalledOnce();
     expect(execTtySpy).toHaveBeenCalledWith(
       expect.stringContaining(
-        `--title "[${
-          testGetTicketFromBranchReturn.ticket
-        }] ${testGetTicketFromBranchReturn.remaining.replaceAll("-", " ")}"`,
+        `--title "[EE-123456] testing ticket title`,
       ),
     );
   });

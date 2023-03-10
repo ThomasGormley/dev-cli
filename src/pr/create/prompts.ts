@@ -3,7 +3,10 @@ import { getTicketFromBranch, PULL_REQUEST_TEMPLATE_MD } from "../../lib/git";
 
 export async function promptTitle() {
   const { ticket, remaining } = getTicketFromBranch();
-  const branchNameWithoutTicket = remaining.replaceAll("-", " ");
+  const remainingReplaceHyphens = remaining.replaceAll("-", " ");
+  const branchNameWithoutTicket = remainingReplaceHyphens.startsWith(" ")
+    ? remainingReplaceHyphens.slice(1)
+    : remainingReplaceHyphens;
   const response = await prompts({
     name: "title",
     type: "text",
