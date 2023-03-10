@@ -22,7 +22,7 @@ const GIT_PULL_REQUEST_TEMPLATE_LOCATIONS = [
   "./.github/PULL_REQUEST_TEMPLATE/",
   "./.github/",
   "./docs/",
-];
+] as const;
 export function findPullRequestTemplate() {
   const root = getGitRootDir();
   const paths = GIT_PULL_REQUEST_TEMPLATE_LOCATIONS.map((dir) =>
