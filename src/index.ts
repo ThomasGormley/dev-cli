@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 import { run, subcommands, binary } from "cmd-ts";
-import { pr } from "./pr/pr";
+import { pr } from "./cli/pr/pr";
 
 const cliCommands = subcommands({
   cmds: {

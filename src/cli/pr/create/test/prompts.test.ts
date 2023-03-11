@@ -1,6 +1,6 @@
 import prompts from "prompts";
 import { describe, expect, it, vi } from "vitest";
-import * as gitMock from "../../../lib/git";
+import * as gitMock from "../../../../lib/git";
 import { promptTitle } from "../prompts";
 
 describe("promptTitle", () => {

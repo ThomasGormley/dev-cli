@@ -1,6 +1,6 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
-import * as git from "../../../lib/git";
-import * as exec from "../../../lib/exec";
+import * as git from "../../../../lib/git";
+import * as exec from "../../../../lib/exec";
 import { createCommand } from "../create";
 import { CreateArgs } from "../types";
 import prompts from "prompts";

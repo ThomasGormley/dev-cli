@@ -1,6 +1,6 @@
-import { getTicketFromBranch, PULL_REQUEST_TEMPLATE_MD } from "../../lib/git";
+import { getTicketFromBranch, PULL_REQUEST_TEMPLATE_MD } from "../../../lib/git";
 import { z } from "zod";
-import { zompt } from "../../lib/zompt";
+import { zompt } from "../../../lib/zompt";
 
 const promptsSchema = z.object({
   title: z.string(),

@@ -1,15 +1,15 @@
-import { escapeSpaces, exec } from "../../lib/exec";
+import { escapeSpaces, exec } from "../../../lib/exec";
 import {
   FIRSTUP_JIRA_LINK_REGEX,
   getFirstupJiraUrl,
   isWorkstationRepo,
-} from "../../lib/firstup";
+} from "../../../lib/firstup";
 import {
   findPullRequestTemplate,
   getPullRequestTemplateString,
   getTicketFromBranch,
   isDirGitRepo,
-} from "../../lib/git";
+} from "../../../lib/git";
 import { promptTemplateOrBlank, promptTitle } from "./prompts";
 import { CreateArgs } from "./types";
 
