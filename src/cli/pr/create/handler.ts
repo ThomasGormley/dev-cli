@@ -11,6 +11,7 @@ import {
   isAuthenticated,
   isDirGitRepo,
 } from "../../../lib/git";
+import { defaultPrTemplate } from "./constants";
 import { promptTemplateOrBlank, promptTitle } from "./prompts";
 import { CreateArgs } from "./types";
 
@@ -20,10 +21,12 @@ export async function createHandler({ title, body, draft, rest }: CreateArgs) {
     process.exit(1);
   }
 
-  if (!isAuthenticated()){
-    console.error("Not authenticated")
-    console.log("Please authenticate using the GitHub CLI using `gh auth login`")
-    process.exit(1)
+  if (!isAuthenticated()) {
+    console.error("Not authenticated");
+    console.log(
+      "Please authenticate using the GitHub CLI using `gh auth login`",
+    );
+    process.exit(1);
   }
 
   if (!title) {
@@ -78,7 +81,7 @@ async function handleHasTemplate() {
 
 async function handleFirstupTemplate() {
   const { ticket: ticketString } = getTicketFromBranch();
-  const template = getPullRequestTemplateString();
+  const template = getPullRequestTemplateString() || defaultPrTemplate;
 
   if (FIRSTUP_JIRA_LINK_REGEX.test(template) && ticketString) {
     const templateWithTicket = template.replace(
