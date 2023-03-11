@@ -1,20 +1,27 @@
+import { execaCommand, execaCommandSync } from "execa";
 import { existsSync, readFileSync } from "fs";
 import path from "path";
-import { execOut } from "./exec";
 
 export const BRANCH_WITH_JIRA_TICKET = /[A-Z]+-[0-9]+/;
 export const PULL_REQUEST_TEMPLATE_MD = "pull_request_template.md";
 
-export function isPwdGitRepo() {
+export async function isDirGitRepo(dir = process.cwd()) {
   try {
-    return Boolean(execOut("git rev-parse --is-inside-work-tree"));
+    const { stdout } = await execaCommand(
+      "git rev-parse --is-inside-work-tree",
+      {
+        cwd: dir,
+      },
+    );
+    return Boolean(stdout);
   } catch (error) {
     return false;
   }
 }
 
 export function getCurrentBranch() {
-  return execOut("git branch --show-current");
+  const { stdout } = execaCommandSync("git branch --show-current");
+  return stdout;
 }
 
 const GIT_PULL_REQUEST_TEMPLATE_LOCATIONS = [
@@ -54,7 +61,9 @@ export function getPullRequestTemplateString() {
 }
 
 export function getGitRootDir() {
-  return execOut("git rev-parse --show-toplevel");
+  const { stdout } = execaCommandSync("git rev-parse --show-toplevel");
+
+  return stdout;
 }
 
 export function getTicketFromBranch(branchName = getCurrentBranch()) {

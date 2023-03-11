@@ -1,4 +1,4 @@
-import { execTty } from "../../lib/exec";
+import { escapeSpaces, exec } from "../../lib/exec";
 import {
   FIRSTUP_JIRA_LINK_REGEX,
   getFirstupJiraUrl,
@@ -8,13 +8,14 @@ import {
   findPullRequestTemplate,
   getPullRequestTemplateString,
   getTicketFromBranch,
-  isPwdGitRepo,
+  isDirGitRepo,
 } from "../../lib/git";
 import { promptTemplateOrBlank, promptTitle } from "./prompts";
 import { CreateArgs } from "./types";
 
 export async function createHandler({ title, body, draft }: CreateArgs) {
-  if (!isPwdGitRepo()) {
+  if (!(await isDirGitRepo())) {
+    console.error("Current directory is not a git repository");
     process.exit(1);
   }
 
@@ -26,16 +27,16 @@ export async function createHandler({ title, body, draft }: CreateArgs) {
     body = await handleBody();
   }
 
-  execTty(
-    [
-      "gh pr create",
-      `--title "${title}"`,
-      `--body "${body}"`,
-      draft && "--draft",
-    ]
-      .filter(Boolean)
-      .join(" "),
-  );
+  const args = [
+    "gh pr create",
+    title ? `--title "${escapeSpaces(title)}"` : "",
+    body ? `--body "${escapeSpaces(body)}"` : "",
+    draft ? "--draft" : "",
+  ]
+    .filter(Boolean)
+    .join(" ");
+
+  await exec(args);
 }
 
 async function handleTitle() {
