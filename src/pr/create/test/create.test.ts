@@ -9,11 +9,13 @@ function generateArgs({
   title = undefined,
   body = undefined,
   draft = false,
+  rest = [],
 }: Partial<CreateArgs> = {}) {
   return {
     title: title,
     body: body,
     draft: draft,
+    rest: rest,
   } satisfies CreateArgs;
 }
 
@@ -37,6 +39,7 @@ describe("dev pr create", () => {
       title: `--title "${exec.escapeSpaces(testArgs.title ?? "")}"`,
       body: `--body "${exec.escapeSpaces(testArgs.body ?? "")}"`,
       draft: "--draft",
+      rest: "",
     };
 
     await createCommand.handler(testArgs);
