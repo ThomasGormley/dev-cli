@@ -1,4 +1,4 @@
-import { boolean, command, flag, option, optional, string } from "cmd-ts";
+import { boolean, command, flag, option, optional, rest, string } from "cmd-ts";
 import { createHandler } from "./handler";
 
 export const createArgs = {
@@ -18,6 +18,11 @@ export const createArgs = {
     type: boolean,
     long: "draft",
     short: "d",
+  }),
+  rest: rest({
+    displayName: "GitHub PR Create Args",
+    description:
+      "Escape hatch to allow sending all valid arguments for `gh pr create`",
   }),
 };
 

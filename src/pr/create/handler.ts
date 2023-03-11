@@ -13,7 +13,7 @@ import {
 import { promptTemplateOrBlank, promptTitle } from "./prompts";
 import { CreateArgs } from "./types";
 
-export async function createHandler({ title, body, draft }: CreateArgs) {
+export async function createHandler({ title, body, draft, rest }: CreateArgs) {
   if (!(await isDirGitRepo())) {
     console.error("Current directory is not a git repository");
     process.exit(1);
@@ -30,8 +30,9 @@ export async function createHandler({ title, body, draft }: CreateArgs) {
   const args = [
     "gh pr create",
     title ? `--title "${escapeSpaces(title)}"` : "",
-    body ? `--body "${escapeSpaces(body)}"` : "",
+    body || body === "" ? `--body "${escapeSpaces(body)}"` : "",
     draft ? "--draft" : "",
+    rest ? rest.join(" ") : "",
   ]
     .filter(Boolean)
     .join(" ");
