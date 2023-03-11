@@ -3,4 +3,4 @@ https://firstup-io.atlassian.net/browse/EE-
 
 **Changes**
 
-**QA Notes**`
+**QA Notes**`;
