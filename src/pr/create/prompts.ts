@@ -1,5 +1,6 @@
 import prompts from "prompts";
 import { getTicketFromBranch, PULL_REQUEST_TEMPLATE_MD } from "../../lib/git";
+import { CreatePrompts } from "./types";
 
 export async function promptTitle() {
   const { ticket, remaining } = getTicketFromBranch();
@@ -14,7 +15,7 @@ export async function promptTitle() {
     initial: ticket ? `[${ticket}] ${branchNameWithoutTicket}` : undefined,
   });
 
-  return response.title as string;
+  return response.title as CreatePrompts["title"];
 }
 
 export async function promptTemplateOrBlank() {
@@ -28,5 +29,5 @@ export async function promptTemplateOrBlank() {
     ],
   });
 
-  return response.template as "template" | "blank";
+  return response.template as CreatePrompts["template"];
 }
