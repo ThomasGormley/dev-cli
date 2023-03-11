@@ -2,11 +2,8 @@ import { describe, it, expect, vi, beforeEach } from "vitest";
 import * as git from "../../../lib/git";
 import * as exec from "../../../lib/exec";
 import { createCommand } from "../create";
-import prompts from "prompts";
 import { CreateArgs } from "../types";
-type NotOptional<Type> = {
-  [Property in keyof Type]: Exclude<Type[Property], undefined>;
-};
+import prompts from "prompts";
 
 function generateArgs({
   title = undefined,
@@ -54,56 +51,25 @@ describe("dev pr create", () => {
     }
   });
 
-  // it("should use ticket info in branch name as initial title value", async () => {
-  //   const execaCommandSpy = vi.spyOn(execaSpy, "execaCommand");
-  //   prompts.inject([]);
+  it("should offer and use repo `pull_request_template.md` as the body if one exists and is selected", async () => {
+    const execaSpy = vi.spyOn(exec, "exec");
+    prompts.inject(["template"]);
+    const testPullRequestTemplate = "test pull request template";
+    vi.spyOn(git, "findPullRequestTemplate").mockReturnValue(
+      "pull_request_template.md",
+    );
+    vi.spyOn(git, "getPullRequestTemplateString").mockReturnValueOnce(
+      testPullRequestTemplate,
+    );
 
-  //   const testArgs = generateArgs({ body: "test body" });
+    const testArgs = generateArgs({ title: "title" });
 
-  //   await createCommand.handler(testArgs);
+    await createCommand.handler(testArgs);
 
-  //   expect(execaCommandSpy).toHaveBeenCalledWith(
-  //     expect.stringContaining(`--title "[EE-123456] testing ticket title"`),
-  //   );
-  // });
-
-  // it("should offer and use repo `pull_request_template.md` as the body if one exists and is selected", async () => {
-  //   const execaCommandSpy = vi.spyOn(execaSpy, "execaCommand");
-  //   prompts.inject(["template"]);
-  //   const testPullRequestTemplate = "test pull request template";
-  //   vi.spyOn(git, "findPullRequestTemplate").mockReturnValue(
-  //     "pull_request_template.md",
-  //   );
-  //   vi.spyOn(git, "getPullRequestTemplateString").mockReturnValueOnce(
-  //     testPullRequestTemplate,
-  //   );
-
-  //   const testArgs = generateArgs({ title: "title" });
-
-  //   await createCommand.handler(testArgs);
-
-  //   expect(execaCommandSpy).toHaveBeenCalledWith(
-  //     expect.stringContaining(`--body "${testPullRequestTemplate}"`),
-  //   );
-  // });
-
-  // it("should set empty body if blank option is selected", async () => {
-  //   const execaCommandSpy = vi.spyOn(execaSpy, "execaCommand");
-  //   prompts.inject(["blank"]);
-  //   const testPullRequestTemplate = "test pull request template";
-  //   vi.spyOn(git, "findPullRequestTemplate").mockReturnValue(
-  //     "pull_request_template.md",
-  //   );
-  //   vi.spyOn(git, "getPullRequestTemplateString").mockReturnValueOnce(
-  //     testPullRequestTemplate,
-  //   );
-
-  //   const testArgs = generateArgs({ title: "title" });
-
-  //   await createCommand.handler(testArgs);
-
-  //   expect(execaCommandSpy).toHaveBeenCalledWith(
-  //     expect.stringContaining(`--body ""`),
-  //   );
-  // });
+    expect(execaSpy).toHaveBeenCalledWith(
+      expect.stringContaining(
+        `--body "${exec.escapeSpaces(testPullRequestTemplate)}"`,
+      ),
+    );
+  });
 });
