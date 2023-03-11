@@ -17,11 +17,6 @@ function generateArgs({
   } satisfies CreateArgs;
 }
 
-const testGetTicketFromBranchReturn = {
-  ticket: "EE-123456",
-  remaining: "-testing-ticket-title",
-};
-
 describe("dev pr create", () => {
   beforeEach(() => {
     vi.spyOn(git, "isDirGitRepo").mockReturnValue(Promise.resolve(true));
