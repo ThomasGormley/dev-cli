@@ -1,6 +1,11 @@
-import prompts from "prompts";
 import { getTicketFromBranch, PULL_REQUEST_TEMPLATE_MD } from "../../lib/git";
-import { CreatePrompts } from "./types";
+import { z } from "zod";
+import { zompt } from "../../lib/zompt";
+
+const promptsSchema = z.object({
+  title: z.string(),
+  template: z.enum(["template", "blank"]),
+});
 
 export async function promptTitle() {
   const { ticket, remaining } = getTicketFromBranch();
@@ -8,18 +13,18 @@ export async function promptTitle() {
   const branchNameWithoutTicket = remainingReplaceHyphens.startsWith(" ")
     ? remainingReplaceHyphens.slice(1)
     : remainingReplaceHyphens;
-  const response = await prompts({
+  const response = await zompt(promptsSchema.pick({ title: true }), {
     name: "title",
     type: "text",
     message: "Title",
     initial: ticket ? `[${ticket}] ${branchNameWithoutTicket}` : undefined,
   });
 
-  return response.title as CreatePrompts["title"];
+  return response.title;
 }
 
 export async function promptTemplateOrBlank() {
-  const response = await prompts({
+  const response = await zompt(promptsSchema.pick({ template: true }), {
     name: "template",
     type: "select",
     message: "Choose a template",
@@ -29,5 +34,5 @@ export async function promptTemplateOrBlank() {
     ],
   });
 
-  return response.template as CreatePrompts["template"];
+  return response.template;
 }

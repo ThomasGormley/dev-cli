@@ -23,7 +23,8 @@
   "dependencies": {
     "cmd-ts": "^0.12.1",
     "execa": "^7.0.0",
-    "prompts": "^2.4.2"
+    "prompts": "^2.4.2",
+    "zod": "^3.21.4"
   },
   "devDependencies": {
     "@changesets/cli": "^2.26.0",
