@@ -1,4 +1,4 @@
-import prompts from "prompts";
+import prompts, { PromptObject } from "prompts";
 import { z } from "zod";
 
 type Questions<TPrompts extends string> =
@@ -6,15 +6,46 @@ type Questions<TPrompts extends string> =
   | Array<prompts.PromptObject<TPrompts>>;
 type Options = prompts.Options;
 
-export async function zompt<TShape extends Record<string, unknown>>(
-  schema: z.Schema<TShape>,
+export async function zompt<TShape extends Record<string, any>>(
+  schema: z.ZodObject<TShape>,
   questions: Questions<keyof TShape & string>,
   options: Options = {},
 ) {
-  const parsed = schema.safeParse(await prompts(questions, options));
-  if (parsed.success) {
-    return parsed.data;
-  } else {
-    throw new Error(parsed.error.toString());
+  if (!Array.isArray(questions)) {
+    questions = [questions];
   }
+  const questionsWithZodValidation = questions.map((question) => {
+    const questionParser = schema.shape[question.name as string];
+
+    if (!(questionParser instanceof z.ZodType)) {
+      return question;
+    }
+
+    const validator: PromptObject["validate"] = (val) => {
+      const parsed = questionParser.safeParse(val);
+
+      if (!parsed.success) {
+        const formatted = parsed.error.format();
+        return formatted._errors.join(". ");
+      }
+
+      if (typeof question.validate === "function") {
+        return question.validate(val);
+      }
+
+      return true;
+    };
+
+    return Object.assign({}, question, {
+      validate: validator,
+    });
+  });
+
+  const parsed = schema.safeParse(
+    await prompts(questionsWithZodValidation, options),
+  );
+  if (!parsed.success) {
+    throw new Error("Error prompting");
+  }
+  return parsed.data;
 }
