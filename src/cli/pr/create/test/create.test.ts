@@ -22,6 +22,7 @@ function generateArgs({
 describe("dev pr create", () => {
   beforeEach(() => {
     vi.spyOn(git, "isDirGitRepo").mockReturnValue(Promise.resolve(true));
+    vi.spyOn(git, "isAuthenticated").mockReturnValue(true);
     vi.spyOn(git, "getCurrentBranch").mockReturnValue(
       "EE-123456-testing-ticket-title",
     );

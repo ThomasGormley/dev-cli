@@ -19,6 +19,11 @@ export async function isDirGitRepo(dir = process.cwd()) {
   }
 }
 
+export function isAuthenticated() {
+  const { exitCode } = execaCommandSync("gh auth status");
+  return exitCode === 0;
+}
+
 export function getCurrentBranch() {
   const { stdout } = execaCommandSync("git branch --show-current");
   return stdout;
