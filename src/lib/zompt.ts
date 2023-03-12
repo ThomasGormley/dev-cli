@@ -43,6 +43,7 @@ function buildQuestionsWithZodValidation<TShape extends Record<string, any>>(
   });
 }
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 function mergeValidateAndZodParse<TShape extends Record<string, any>>(
   questionParser: z.ZodObject<TShape>,
   question: prompts.PromptObject<keyof TShape & string>,
