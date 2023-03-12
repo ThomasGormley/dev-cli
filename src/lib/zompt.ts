@@ -18,29 +18,11 @@ export async function zompt<TShape extends Record<string, any>>(
   const questionsWithZodValidation = questions.map((question) => {
     const questionParser = schema.shape[question.name as string];
 
-    if (!(questionParser instanceof z.ZodType)) {
+    if (!(questionParser instanceof z.ZodObject)) {
       return question;
     }
 
-    const validator: PromptObject["validate"] = (val) => {
-      const parsed = questionParser.safeParse(val);
-
-      if (!parsed.success) {
-        const formatted = parsed.error.format();
-        return formatted._errors.join(". ");
-      }
-
-      if (typeof question.validate === "function") {
-        // This type signature isn't correct
-        // validate only ever gets passed the value
-        // https://github.com/terkelg/prompts/blob/771ff1d0f246774ebf9423804a8a2d825dbe23ed/lib/elements/text.js#L73
-        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-        // @ts-expect-error
-        return question.validate(val);
-      }
-
-      return true;
-    };
+    const validator = mergeValidateAndZodParse(questionParser, question);
 
     return Object.assign({}, question, {
       validate: validator,
@@ -48,4 +30,31 @@ export async function zompt<TShape extends Record<string, any>>(
   });
 
   return schema.parse(await prompts(questionsWithZodValidation, options));
+}
+
+function mergeValidateAndZodParse<TShape extends Record<string, any>>(
+  questionParser: z.ZodObject<TShape>,
+  question: prompts.PromptObject<keyof TShape & string>,
+) {
+  const fn: PromptObject["validate"] = (val) => {
+    const parsed = questionParser.safeParse(val);
+
+    if (!parsed.success) {
+      const formatted = parsed.error.format();
+      return formatted._errors.join(". ");
+    }
+
+    if (typeof question.validate === "function") {
+      // This type signature isn't correct
+      // validate only ever gets passed the value
+      // https://github.com/terkelg/prompts/blob/771ff1d0f246774ebf9423804a8a2d825dbe23ed/lib/elements/text.js#L73
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      // @ts-expect-error
+      return question.validate(val);
+    }
+
+    return true;
+  };
+
+  return fn;
 }
