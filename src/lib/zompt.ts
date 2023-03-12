@@ -6,6 +6,7 @@ type Questions<TPrompts extends string> =
   | Array<prompts.PromptObject<TPrompts>>;
 type Options = prompts.Options;
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export async function zompt<TShape extends Record<string, any>>(
   schema: z.ZodObject<TShape>,
   questions: Questions<keyof TShape & string>,
@@ -30,6 +31,11 @@ export async function zompt<TShape extends Record<string, any>>(
       }
 
       if (typeof question.validate === "function") {
+        // This type signature isn't correct
+        // validate only ever gets passed the value
+        // https://github.com/terkelg/prompts/blob/771ff1d0f246774ebf9423804a8a2d825dbe23ed/lib/elements/text.js#L73
+        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+        // @ts-expect-error
         return question.validate(val);
       }
 
@@ -41,11 +47,5 @@ export async function zompt<TShape extends Record<string, any>>(
     });
   });
 
-  const parsed = schema.safeParse(
-    await prompts(questionsWithZodValidation, options),
-  );
-  if (!parsed.success) {
-    throw new Error("Error prompting");
-  }
-  return parsed.data;
+  return schema.parse(await prompts(questionsWithZodValidation, options));
 }
