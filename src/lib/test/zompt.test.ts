@@ -29,4 +29,22 @@ describe("zompt", () => {
       boolean: true,
     });
   });
+
+  it("should throw an error when parsing fails", async () => {
+    prompts.inject([1]);
+    const testSchema = z.object({
+      string: z.string(),
+      boolean: z.boolean(),
+    });
+
+    const zomptPromise = zompt(testSchema, [
+      {
+        name: "string",
+        type: "text",
+        message: "test",
+      },
+    ]);
+
+    expect(zomptPromise).rejects.toThrow(z.ZodError);
+  });
 });
