@@ -15,7 +15,20 @@ export async function zompt<TShape extends Record<string, any>>(
   if (!Array.isArray(questions)) {
     questions = [questions];
   }
-  const questionsWithZodValidation = questions.map((question) => {
+  const questionsWithZodValidation = buildQuestionsWithZodValidation(
+    schema,
+    questions,
+  );
+
+  return schema.parse(await prompts(questionsWithZodValidation, options));
+}
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+function buildQuestionsWithZodValidation<TShape extends Record<string, any>>(
+  schema: z.ZodObject<TShape>,
+  questions: prompts.PromptObject<keyof TShape & string>[],
+) {
+  return questions.map((question) => {
     const questionParser = schema.shape[question.name as string];
 
     if (!(questionParser instanceof z.ZodObject)) {
@@ -28,8 +41,6 @@ export async function zompt<TShape extends Record<string, any>>(
       validate: validator,
     });
   });
-
-  return schema.parse(await prompts(questionsWithZodValidation, options));
 }
 
 function mergeValidateAndZodParse<TShape extends Record<string, any>>(
