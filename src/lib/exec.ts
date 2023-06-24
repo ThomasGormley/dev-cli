@@ -1,26 +1,20 @@
-import { execaCommand, execaCommandSync, ExecaError } from "execa";
+import { execa, ExecaError } from "execa";
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-const isExecaError = (err: any): err is ExecaError => {
-  return "all" in err;
-};
+export function isExecaError(error: unknown): error is ExecaError {
+  return Object.hasOwnProperty.call(error, "shortMessage");
+}
 
-export async function exec(command: string) {
+export async function exec(file: string, args: string[] = []) {
   try {
-    return await execaCommand(command, {
+    return await execa(file, args, {
       all: true,
       stdio: "inherit",
     });
   } catch (error) {
     if (isExecaError(error)) {
-      throw new Error(error.message);
+      process.exit(error.exitCode);
     }
-
-    return "Unknown error";
   }
-}
-export function execSync(command: string) {
-  return execaCommandSync(command, { stdio: "inherit", all: true });
 }
 
 export function escapeSpaces(string: string) {

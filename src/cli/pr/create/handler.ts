@@ -1,4 +1,5 @@
-import { escapeSpaces, exec } from "../../../lib/exec";
+import { execa, ExecaError } from "execa";
+import { exec } from "../../../lib/exec";
 import {
   FIRSTUP_JIRA_LINK_REGEX,
   getFirstupJiraUrl,
@@ -16,6 +17,7 @@ import { promptTemplateOrBlank, promptTitle } from "./prompts";
 import { CreateArgs } from "./types";
 
 export async function createHandler({ title, body, draft, rest }: CreateArgs) {
+  // process.exit(1);
   if (!(await isDirGitRepo())) {
     console.error("Current directory is not a git repository");
     process.exit(1);
@@ -38,16 +40,15 @@ export async function createHandler({ title, body, draft, rest }: CreateArgs) {
   }
 
   const args = [
-    "gh pr create",
-    title ? `--title "${escapeSpaces(title)}"` : "",
-    body || body === "" ? `--body "${escapeSpaces(body)}"` : "",
+    "pr",
+    "create",
+    title ? `--title=${title}` : "",
+    body || body === "" ? `--body=${body}` : "",
     draft ? "--draft" : "",
-    rest ? rest.join(" ") : "",
-  ]
-    .filter(Boolean)
-    .join(" ");
+    rest || [],
+  ].filter(Boolean);
 
-  await exec(args);
+  await exec("gh", args);
 }
 
 async function handleTitle() {
@@ -82,7 +83,7 @@ async function handleHasTemplate() {
 async function handleFirstupTemplate() {
   const { ticket: ticketString } = getTicketFromBranch();
   const template = getPullRequestTemplateString() || defaultPrTemplate;
-
+  console.log({ template });
   if (FIRSTUP_JIRA_LINK_REGEX.test(template) && ticketString) {
     const templateWithTicket = template.replace(
       FIRSTUP_JIRA_LINK_REGEX,
