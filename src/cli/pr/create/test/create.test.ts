@@ -31,7 +31,6 @@ describe("dev pr create", () => {
   });
 
   it("should forward all args to `gh pr create` when provided", async () => {
-    // const execSpy = vi.spyOn(exec, "exec");
     const testArgs = generateArgs({
       title: "test title",
       body: "test body",
@@ -39,22 +38,6 @@ describe("dev pr create", () => {
       rest: "-B rest",
     });
 
-    // given this code:
-    // ```
-    // const args = [
-    //   "pr",
-    //   "create",
-    //   title ? `--title=${title}` : "",
-    //   body || body === "" ? `--body=${body}` : "",
-    //   draft ? "--draft" : "",
-    //   ...(rest || []),
-    // ].filter(Boolean);
-
-    // console.log(args.join(" "));
-
-    // await execa("gh", args, { all: true, stdio: "inherit" });
-    // ```
-    // write an expectation in a loop that `execa` is called with the following arguments:
     const expectedArgStrings: Record<keyof CreateArgs, string> = {
       title: `--title=${testArgs.title ?? ""}`,
       body: `--body=${testArgs.body ?? ""}`,
