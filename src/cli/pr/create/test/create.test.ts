@@ -69,10 +69,7 @@ describe("dev pr create", () => {
       expect.arrayContaining([
         "pr",
         "create",
-        expectedArgStrings.title,
-        expectedArgStrings.body,
-        expectedArgStrings.draft,
-        expectedArgStrings.rest,
+        ...Object.values(expectedArgStrings),
       ]),
       expect.anything(),
     );

@@ -14,6 +14,8 @@ export async function exec(file: string, args: string[] = []) {
     if (isExecaError(error)) {
       process.exit(error.exitCode);
     }
+
+    throw error;
   }
 }
 

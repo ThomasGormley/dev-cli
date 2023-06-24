@@ -1,4 +1,3 @@
-import { execa, ExecaError } from "execa";
 import { exec } from "../../../lib/exec";
 import {
   FIRSTUP_JIRA_LINK_REGEX,
@@ -17,7 +16,6 @@ import { promptTemplateOrBlank, promptTitle } from "./prompts";
 import { CreateArgs } from "./types";
 
 export async function createHandler({ title, body, draft, rest }: CreateArgs) {
-  // process.exit(1);
   if (!(await isDirGitRepo())) {
     console.error("Current directory is not a git repository");
     process.exit(1);
