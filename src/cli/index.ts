@@ -10,7 +10,7 @@ const cliCommands = subcommands({
     run: run,
   },
   name: "dev",
-  description: "Personal development CLI with utilities",
+  description: "Development toolbox CLI with common utilities and script",
   version: version,
 });
 
