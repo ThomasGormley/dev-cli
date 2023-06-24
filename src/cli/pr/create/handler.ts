@@ -41,9 +41,9 @@ export async function createHandler({ title, body, draft, rest }: CreateArgs) {
     "pr",
     "create",
     title ? `--title=${title}` : "",
-    body || body === "" ? `--body=${body}` : "",
+    body && `--body=${body}`,
     draft ? "--draft" : "",
-    rest || [],
+    rest.length > 0 ? rest : "",
   ].filter(Boolean);
 
   await exec("gh", args);
@@ -60,7 +60,7 @@ async function handleBody() {
     return handleHasTemplate();
   }
 
-  return "";
+  return undefined;
 }
 
 async function handleHasTemplate() {
