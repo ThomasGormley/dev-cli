@@ -1,5 +1,5 @@
 import { binary, subcommands } from "cmd-ts";
-import { getPackageVersion } from "../lib/package";
+import { getPackageVersion } from "../lib/internal";
 import { pr } from "./pr/pr";
 import { run } from "./run/run";
 

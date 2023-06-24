@@ -1,21 +1,26 @@
-import { readFileSync, existsSync } from "fs";
+import { existsSync, readFileSync } from "fs";
 import path from "path";
-import { fileURLToPath } from "url";
 import type { PackageJson } from "type-fest";
 
-const __filename = fileURLToPath(import.meta.url);
-const distPath = path.dirname(__filename);
-export const PKG_ROOT = path.join(distPath, "../");
+const PROJECT_ROOT = path.dirname(findPackageJsonPath());
 
-function resolvePackageJson() {
-  const packageJsonPath = path.join(PKG_ROOT, "package.json");
-  return JSON.parse(readFileSync(packageJsonPath, "utf8")) as PackageJson;
+export function findPackageJsonPath(cwd: string = process.cwd()): string {
+  const packageJsonPath = path.join(cwd, "package.json");
+  if (existsSync(packageJsonPath)) {
+    return packageJsonPath;
+  }
+  const parentDir = path.dirname(cwd);
+  if (parentDir === cwd) {
+    console.error("Could not find package.json file.");
+    process.exit(1);
+  }
+  return findPackageJsonPath(parentDir);
 }
 
-export const getPackageVersion = () => {
-  const packageJsonContent = resolvePackageJson();
-  return packageJsonContent.version ?? "1.0.0";
-};
+export function resolvePackageJson(cwd: string = process.cwd()) {
+  const packageJsonPath = findPackageJsonPath(cwd);
+  return JSON.parse(readFileSync(packageJsonPath, "utf8")) as PackageJson;
+}
 
 export function hasDep(name: string) {
   const packageJsonContent = resolvePackageJson();
@@ -37,5 +42,5 @@ export function hasAnyDep(name: string) {
 }
 
 export function hasFile(name: string) {
-  return existsSync(path.join(PKG_ROOT, name));
+  return existsSync(path.join(PROJECT_ROOT, name));
 }
