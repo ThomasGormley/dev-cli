@@ -1,5 +1,15 @@
 # dev-cli
 
+## 0.2.0
+
+### Minor Changes
+
+- e0ed3d4: Adds dev run tsc command
+
+### Patch Changes
+
+- 519a5e2: Fix escaping body of PR templates and titles
+
 ## 0.1.0
 
 ### Minor Changes
