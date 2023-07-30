@@ -1,16 +1,12 @@
 import { exec } from "../../../lib/exec";
-import {
-  isWorkstationRepo,
-} from "../../../lib/firstup";
+import { isWorkstationRepo } from "../../../lib/firstup";
 import {
   findPullRequestTemplate,
   getPullRequestTemplateString,
   isAuthenticated,
   isDirGitRepo,
 } from "../../../lib/git";
-import {
-  applyTransformationsToString,
-} from "../../../lib/string";
+import { applyTransformationsToString } from "../../../lib/string";
 import { defaultPrTemplate } from "./lib/constants";
 import { getFirstupTemplateTransformations } from "./lib/transformations";
 import { promptAddCommitsAsChanges, promptTitle } from "./prompts";

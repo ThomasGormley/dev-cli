@@ -21,7 +21,9 @@ export async function promptTitle() {
     name: "title",
     type: "text",
     message: "Title",
-    initial: ticket ? `[${ticket}] ${branchNameWithoutTicket}` : branchNameWithoutTicket,
+    initial: ticket
+      ? `[${ticket}] ${branchNameWithoutTicket}`
+      : branchNameWithoutTicket,
   });
 
   return response.title;
