@@ -1,4 +1,4 @@
-type TransformationFunction = (body: string) => string;
+export type TransformationFunction = (body: string) => string;
 export function applyTransformationsToString(
   body: string,
   transformations: TransformationFunction[],

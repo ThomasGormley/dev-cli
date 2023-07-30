@@ -12,9 +12,12 @@ import {
   isAuthenticated,
   isDirGitRepo,
 } from "../../../lib/git";
-import { applyTransformationsToString } from "../../../lib/string";
+import {
+  applyTransformationsToString,
+  TransformationFunction,
+} from "../../../lib/string";
 import { defaultPrTemplate } from "./constants";
-import { promptTitle } from "./prompts";
+import { promptAddCommitsAsChanges, promptTitle } from "./prompts";
 import { CreateArgs } from "./types";
 
 export async function createHandler({ title, body, draft, rest }: CreateArgs) {
@@ -42,7 +45,7 @@ export async function createHandler({ title, body, draft, rest }: CreateArgs) {
   const args = [
     "pr",
     "create",
-    title ? `--title=${title}` : "",
+    title ? `--title=${title}` : `--title=""`,
     body && `--body=${body}`,
     draft ? "--draft" : "",
     rest.length > 0 ? rest : "",
@@ -64,10 +67,34 @@ async function handleBody() {
   return undefined;
 }
 
-async function handleFirstupTemplate() {
-  const template = getPullRequestTemplateString() || defaultPrTemplate;
+const addChangesToBodyTransformation = (body: string): string => {
+  console.log("Fetching changes...");
+  const changesHeader = "**Changes**";
+  const hasChangesHeader = body.includes(changesHeader);
+  // append markdown bulletpoint before each change message on a new line
+  const changesList = `\n${getGitChangeMessages()
+    .map((change) => `- ${change}`)
+    .join("\n")}`;
 
-  const transformedTemplate = applyTransformationsToString(template, [
+  const hasChanges = changesList.length > 0;
+
+  if (!hasChanges) {
+    console.log("No changes found");
+  } else {
+    console.log("Changes found");
+    console.log(changesList);
+  }
+  return hasChangesHeader && hasChanges
+    ? body.replace(changesHeader, changesHeader + changesList)
+    : body;
+};
+
+function getFirstupTemplateTransformations({
+  addCommitsAsChanges,
+}: {
+  addCommitsAsChanges: boolean;
+}) {
+  const transformations: TransformationFunction[] = [
     (body) => {
       const { ticket: ticketString } = getTicketFromBranch();
       const bodyHasJiraLink = FIRSTUP_JIRA_LINK_REGEX.test(body);
@@ -78,19 +105,22 @@ async function handleFirstupTemplate() {
           )
         : body;
     },
-    (body) => {
-      const changesHeader = "**Changes**";
-      const hasChangesHeader = body.includes(changesHeader);
-      // append markdown bulletpoint before each change message on a new line
-      const changesList = `\n${getGitChangeMessages()
-        .map((change) => `- ${change}`)
-        .join("\n")}`;
+  ];
 
-      return hasChangesHeader
-        ? body.replace(changesHeader, changesHeader + changesList)
-        : body;
-    },
-  ]);
+  if (addCommitsAsChanges) {
+    transformations.push(addChangesToBodyTransformation);
+  }
+
+  return transformations;
+}
+
+async function handleFirstupTemplate() {
+  const template = getPullRequestTemplateString() || defaultPrTemplate;
+  const addCommitsAsChanges = await promptAddCommitsAsChanges();
+  const transformedTemplate = applyTransformationsToString(
+    template,
+    getFirstupTemplateTransformations({ addCommitsAsChanges }),
+  );
 
   return transformedTemplate;
 }

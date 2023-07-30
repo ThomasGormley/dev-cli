@@ -8,6 +8,7 @@ import { zompt } from "../../../lib/zompt";
 const promptsSchema = z.object({
   title: z.string(),
   template: z.enum(["template", "blank"]),
+  addCommitsAsChanges: z.boolean(),
 });
 
 export async function promptTitle() {
@@ -38,4 +39,18 @@ export async function promptTemplateOrBlank() {
   });
 
   return response.template;
+}
+
+export async function promptAddCommitsAsChanges() {
+  const response = await zompt(
+    promptsSchema.pick({ addCommitsAsChanges: true }),
+    {
+      name: "addCommitsAsChanges",
+      type: "confirm",
+      message: "Add commits as changes?",
+      initial: true,
+    },
+  );
+
+  return response.addCommitsAsChanges;
 }
