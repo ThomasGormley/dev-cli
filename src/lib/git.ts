@@ -1,4 +1,4 @@
-import { execaCommand, execaCommandSync } from "execa";
+import { execaCommand, execaCommandSync, execaSync } from "execa";
 import { existsSync, readFileSync } from "fs";
 import path from "path";
 
@@ -27,6 +27,23 @@ export function isAuthenticated() {
 export function getCurrentBranch() {
   const { stdout } = execaCommandSync("git branch --show-current");
   return stdout;
+}
+
+function getDefaultHeadBranch() {
+  const { stdout } = execaSync("git", ["remote", "show", "origin"]);
+  const headBranch = stdout.match(/HEAD branch: (.*)/)?.[1] ?? "main";
+  return headBranch;
+}
+
+export function getGitChangeMessages(
+  sourceBranch = getDefaultHeadBranch(),
+  targetBranch = getCurrentBranch(),
+) {
+  const { stdout } = execaCommandSync(
+    `git log --pretty=format:"%h\\ %s" --no-merges ${sourceBranch}..${targetBranch}`,
+  );
+  // strip the surrounding quotes on each line
+  return stdout.split("\n").map((line) => line.slice(1, -1));
 }
 
 const GIT_PULL_REQUEST_TEMPLATE_LOCATIONS = [
