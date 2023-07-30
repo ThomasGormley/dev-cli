@@ -6,11 +6,13 @@ import {
 } from "../../../lib/firstup";
 import {
   findPullRequestTemplate,
+  getGitChangeMessages,
   getPullRequestTemplateString,
   getTicketFromBranch,
   isAuthenticated,
   isDirGitRepo,
 } from "../../../lib/git";
+import { applyTransformationsToString } from "../../../lib/string";
 import { defaultPrTemplate } from "./constants";
 import { promptTitle } from "./prompts";
 import { CreateArgs } from "./types";
@@ -63,15 +65,32 @@ async function handleBody() {
 }
 
 async function handleFirstupTemplate() {
-  const { ticket: ticketString } = getTicketFromBranch();
   const template = getPullRequestTemplateString() || defaultPrTemplate;
-  if (FIRSTUP_JIRA_LINK_REGEX.test(template) && ticketString) {
-    const templateWithTicket = template.replace(
-      FIRSTUP_JIRA_LINK_REGEX,
-      getFirstupJiraUrl(ticketString).toString(),
-    );
-    return templateWithTicket;
-  }
 
-  return template;
+  const transformedTemplate = applyTransformationsToString(template, [
+    (body) => {
+      const { ticket: ticketString } = getTicketFromBranch();
+      const bodyHasJiraLink = FIRSTUP_JIRA_LINK_REGEX.test(body);
+      return bodyHasJiraLink && ticketString
+        ? body.replace(
+            FIRSTUP_JIRA_LINK_REGEX,
+            getFirstupJiraUrl(ticketString).toString(),
+          )
+        : body;
+    },
+    (body) => {
+      const changesHeader = "**Changes**";
+      const hasChangesHeader = body.includes(changesHeader);
+      // append markdown bulletpoint before each change message on a new line
+      const changesList = `\n${getGitChangeMessages()
+        .map((change) => `- ${change}`)
+        .join("\n")}`;
+
+      return hasChangesHeader
+        ? body.replace(changesHeader, changesHeader + changesList)
+        : body;
+    },
+  ]);
+
+  return transformedTemplate;
 }
