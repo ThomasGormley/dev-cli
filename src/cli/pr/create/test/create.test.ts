@@ -28,6 +28,7 @@ describe("dev pr create", () => {
     vi.spyOn(git, "getCurrentBranch").mockReturnValue(
       "EE-123456-testing-ticket-title",
     );
+    vi.spyOn(git, "getGitChangeMessages").mockReturnValue(["main"]);
   });
 
   it("should forward all args to `gh pr create` when provided", async () => {
