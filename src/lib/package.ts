@@ -2,8 +2,6 @@ import { existsSync, readFileSync } from "fs";
 import path from "path";
 import type { PackageJson } from "type-fest";
 
-const PROJECT_ROOT = path.dirname(findPackageJsonPath());
-
 export function findPackageJsonPath(cwd: string = process.cwd()): string {
   const packageJsonPath = path.join(cwd, "package.json");
   if (existsSync(packageJsonPath)) {
@@ -39,8 +37,4 @@ export function hasPeerDep(name: string) {
 
 export function hasAnyDep(name: string) {
   return hasDep(name) || hasDevDep(name) || hasPeerDep(name);
-}
-
-export function hasFile(name: string) {
-  return existsSync(path.join(PROJECT_ROOT, name));
 }

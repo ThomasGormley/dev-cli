@@ -1,4 +1,7 @@
-export const isWorkstationRepo = process.cwd().includes("/socialchorus/");
+const workstationDirectories = ["/socialchorus", "/firstup"];
+export const isWorkstationRepo = workstationDirectories.some((dir) =>
+  process.cwd().includes(dir),
+);
 
 export const FIRSTUP_JIRA_LINK_REGEX =
   /https:\/\/firstup-io.atlassian.net\/browse\/[A-Z]+-/;
