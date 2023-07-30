@@ -1,20 +1,15 @@
 import { exec } from "../../../lib/exec";
 import {
-  FIRSTUP_JIRA_LINK_REGEX,
-  getFirstupJiraUrl,
   isWorkstationRepo,
 } from "../../../lib/firstup";
 import {
   findPullRequestTemplate,
-  getGitChangeMessages,
   getPullRequestTemplateString,
-  getTicketFromBranch,
   isAuthenticated,
   isDirGitRepo,
 } from "../../../lib/git";
 import {
   applyTransformationsToString,
-  TransformationFunction,
 } from "../../../lib/string";
 import { defaultPrTemplate } from "./lib/constants";
 import { getFirstupTemplateTransformations } from "./lib/transformations";
