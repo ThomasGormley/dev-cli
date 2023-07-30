@@ -16,7 +16,7 @@ import {
   applyTransformationsToString,
   TransformationFunction,
 } from "../../../lib/string";
-import { defaultPrTemplate } from "./constants";
+import { defaultPrTemplate } from "./lib/constants";
 import { promptAddCommitsAsChanges, promptTitle } from "./prompts";
 import { CreateArgs } from "./types";
 
