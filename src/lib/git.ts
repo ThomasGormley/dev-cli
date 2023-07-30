@@ -40,7 +40,7 @@ export function getGitChangeMessages(
   targetBranch = getCurrentBranch(),
 ) {
   const { stdout } = execaCommandSync(
-    `git log --pretty=format:"%h\\ %s" --no-merges ${sourceBranch}..${targetBranch}`,
+    `git log --pretty=format:"%s\\ (%h)" --no-merges ${sourceBranch}..${targetBranch}`,
   );
   // strip the surrounding quotes on each line
   return stdout.split("\n").map((line) => line.slice(1, -1));
