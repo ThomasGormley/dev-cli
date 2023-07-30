@@ -12,7 +12,7 @@ import {
   isDirGitRepo,
 } from "../../../lib/git";
 import { defaultPrTemplate } from "./constants";
-import { promptTemplateOrBlank, promptTitle } from "./prompts";
+import { promptTitle } from "./prompts";
 import { CreateArgs } from "./types";
 
 export async function createHandler({ title, body, draft, rest }: CreateArgs) {
@@ -55,33 +55,16 @@ async function handleTitle() {
 
 async function handleBody() {
   const hasTemplate = Boolean(findPullRequestTemplate());
-
-  if (hasTemplate) {
-    return handleHasTemplate();
+  if (hasTemplate && isWorkstationRepo) {
+    return handleFirstupTemplate();
   }
 
   return undefined;
 }
 
-async function handleHasTemplate() {
-  if (isWorkstationRepo) {
-    return handleFirstupTemplate();
-  }
-
-  const template = await promptTemplateOrBlank();
-
-  switch (template) {
-    case "blank":
-      return "";
-    case "template":
-      return getPullRequestTemplateString();
-  }
-}
-
 async function handleFirstupTemplate() {
   const { ticket: ticketString } = getTicketFromBranch();
   const template = getPullRequestTemplateString() || defaultPrTemplate;
-  console.log({ template });
   if (FIRSTUP_JIRA_LINK_REGEX.test(template) && ticketString) {
     const templateWithTicket = template.replace(
       FIRSTUP_JIRA_LINK_REGEX,
