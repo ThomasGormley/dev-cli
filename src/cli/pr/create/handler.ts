@@ -1,7 +1,6 @@
 import { exec } from "../../../lib/exec";
 import { isWorkstationRepo } from "../../../lib/firstup";
 import {
-  findPullRequestTemplate,
   getPullRequestTemplateString,
   isAuthenticated,
   isDirGitRepo,
@@ -33,14 +32,15 @@ export async function createHandler({ title, body, draft, rest }: CreateArgs) {
   if (!body) {
     body = await handleBody();
   }
-
+  console.log({ rest });
   const args = [
     "pr",
     "create",
-    title ? `--title=${title}` : `--title=""`,
-    body && `--body=${body}`,
+    title ? `--title="${title}"` : `--title=""`,
+    body && `--body="${body}"`,
     draft ? "--draft" : "",
-    rest.length > 0 ? rest : "",
+    // split each arg into its own string
+    ...(rest ?? "").split(" "),
   ].filter(Boolean);
 
   await exec("gh", args);
@@ -51,8 +51,7 @@ async function handleTitle() {
 }
 
 async function handleBody() {
-  const hasTemplate = Boolean(findPullRequestTemplate());
-  if (hasTemplate && isWorkstationRepo) {
+  if (isWorkstationRepo) {
     return handleFirstupTemplate();
   }
 
@@ -61,6 +60,7 @@ async function handleBody() {
 
 async function handleFirstupTemplate() {
   const template = getPullRequestTemplateString() || defaultPrTemplate;
+  console.log("Using default PR template");
   const addCommitsAsChanges = await promptAddCommitsAsChanges();
   const transformedTemplate = applyTransformationsToString(
     template,

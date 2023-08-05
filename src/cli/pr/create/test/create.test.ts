@@ -4,6 +4,7 @@ import { createCommand } from "../create";
 import { CreateArgs } from "../types";
 import prompts from "prompts";
 import { execa } from "execa";
+import { omit } from "../../../../lib/object-utils";
 
 function generateArgs({
   title = undefined,
@@ -40,8 +41,8 @@ describe("dev pr create", () => {
     });
 
     const expectedArgStrings: Record<keyof CreateArgs, string> = {
-      title: `--title=${testArgs.title ?? ""}`,
-      body: `--body=${testArgs.body ?? ""}`,
+      title: `--title=${`"${testArgs.title}"` ?? ""}`,
+      body: `--body=${`"${testArgs.body}"` ?? ""}`,
       draft: "--draft",
       rest: "-B rest",
     };
@@ -53,7 +54,8 @@ describe("dev pr create", () => {
       expect.arrayContaining([
         "pr",
         "create",
-        ...Object.values(expectedArgStrings),
+        ...Object.values(omit(expectedArgStrings, "rest")),
+        ...(expectedArgStrings.rest ?? "").split(" "),
       ]),
       expect.anything(),
     );

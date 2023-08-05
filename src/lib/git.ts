@@ -75,7 +75,7 @@ export function getPullRequestTemplateString() {
   const templatePath = findPullRequestTemplate();
 
   if (!templatePath) {
-    console.error("Could not find pull request template, using blank");
+    console.error("No pull request template found");
     return "";
   }
 
