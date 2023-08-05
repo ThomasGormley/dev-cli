@@ -1,5 +1,5 @@
 import { join } from "path";
-import { readFileSync } from "fs";
+import { existsSync, readFileSync } from "fs";
 import { parse as yamlParse } from "yaml";
 import { PKG_ROOT } from "./internal";
 import { z } from "zod";
@@ -24,12 +24,11 @@ const featureFlagSchema = z.object({
 type FeatureFlags = z.infer<typeof featureFlagSchema>;
 
 const flagsYml = join(PKG_ROOT, "flags.yml");
-console.log({ flagsYml });
+const flagsYmlExists = existsSync(flagsYml);
+const flagsYmlBuffer = flagsYmlExists ? readFileSync(flagsYml, "utf8") : "";
 
 export function init() {
-  const parsedYaml = featureFlagSchema.parse(
-    yamlParse(readFileSync(flagsYml, "utf8")) ?? {},
-  );
+  const parsedYaml = featureFlagSchema.parse(yamlParse(flagsYmlBuffer) ?? {});
   const featureFlagMap = new Map<
     keyof FeatureFlags,
     boolean | string | number
@@ -64,4 +63,4 @@ export function init() {
   };
 }
 
-export const featureFlags = init();
+export const featureFlag = init();
