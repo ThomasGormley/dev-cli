@@ -4,6 +4,7 @@ import {
 } from "../../../lib/git";
 import { z } from "zod";
 import { zompt } from "../../../lib/zompt";
+import { featureFlag } from "../../../lib/feature-flag";
 
 const promptsSchema = z.object({
   title: z.string(),
@@ -44,6 +45,12 @@ export async function promptTemplateOrBlank() {
 }
 
 export async function promptAddCommitsAsChanges() {
+  const shouldPrompt = featureFlag.enabled("PromptForChangesListInBody");
+
+  if (!shouldPrompt) {
+    return false;
+  }
+
   const response = await zompt(
     promptsSchema.pick({ addCommitsAsChanges: true }),
     {
