@@ -8,8 +8,6 @@ type FlagsOfType<TT extends boolean | string | number, TObj> = {
   [K in keyof TObj]: TObj[K] extends TT ? K : never;
 }[keyof TObj];
 type BooleanFlags<T> = FlagsOfType<boolean, T>;
-// type StringFlags<T> = FlagsOfType<string, T>;
-// type NumberFlags<T> = FlagsOfType<number, T>;
 
 const defaultValues = {
   boolean: false,
@@ -18,12 +16,9 @@ const defaultValues = {
 } as const;
 
 const booleanWithDefault = z.boolean().default(defaultValues.boolean);
-// const stringWithDefault = z.string().default(defaultValues.string);
-// const numberWithDefault = z.number().default(defaultValues.number);
 
 const featureFlagSchema = z.object({
   PromptForChangesListInBody: booleanWithDefault,
-  UseAIForPullRequestTitle: booleanWithDefault,
 });
 
 type FeatureFlags = z.infer<typeof featureFlagSchema>;
@@ -63,20 +58,9 @@ export function init() {
     return flag;
   }
 
-  // function stringValue(
-  //   flagName: StringFlags<FeatureFlags> | NumberFlags<FeatureFlags>,
-  // ) {
-  //   const flag = findFlag(flagName);
-  //   if (typeof flag !== "string") {
-  //     throw new Error(`non-string flag ${String(flagName)}.`);
-  //   }
-  //   return flag;
-  // }
-
   return {
     findFlag,
     enabled,
-    // stringValue,
   };
 }
 
