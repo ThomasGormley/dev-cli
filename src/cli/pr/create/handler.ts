@@ -32,7 +32,7 @@ export async function createHandler({ title, body, draft, rest }: CreateArgs) {
   if (!body) {
     body = await handleBody();
   }
-  console.log({ rest });
+
   const args = [
     "pr",
     "create",
