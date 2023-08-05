@@ -1,5 +1,15 @@
 # dev-cli
 
+## 0.3.0
+
+### Minor Changes
+
+- f8c295d: Adds changeset to pr create body
+
+### Patch Changes
+
+- 2185e14: Fixing package.json issue
+
 ## 0.2.0
 
 ### Minor Changes
