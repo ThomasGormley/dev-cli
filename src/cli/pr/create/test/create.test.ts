@@ -11,7 +11,7 @@ function generateArgs({
   body = undefined,
   draft = false,
   rest = [],
-}: CreateArgs = {}) {
+}: Partial<CreateArgs>) {
   return {
     title: title,
     body: body,
@@ -37,7 +37,7 @@ describe("dev pr create", () => {
       title: "test title",
       body: "test body",
       draft: true,
-      rest: "-B rest",
+      rest: ["-B rest"],
     });
 
     const expectedArgStrings: Record<keyof CreateArgs, string> = {
@@ -55,7 +55,8 @@ describe("dev pr create", () => {
         "pr",
         "create",
         ...Object.values(omit(expectedArgStrings, "rest")),
-        ...(expectedArgStrings.rest ?? "").split(" "),
+        "-B",
+        "rest",
       ]),
       expect.anything(),
     );

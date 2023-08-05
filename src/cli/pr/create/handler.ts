@@ -11,6 +11,10 @@ import { getFirstupTemplateTransformations } from "./lib/transformations";
 import { promptAddCommitsAsChanges, promptTitle } from "./prompts";
 import { CreateArgs } from "./types";
 
+function extractRestArgs(rest: string[]): string[] {
+  return rest.map((arg) => arg.split(" ")).flat();
+}
+
 export async function createHandler({ title, body, draft, rest }: CreateArgs) {
   if (!(await isDirGitRepo())) {
     console.error("Current directory is not a git repository");
@@ -39,9 +43,8 @@ export async function createHandler({ title, body, draft, rest }: CreateArgs) {
     title ? `--title="${title}"` : `--title=""`,
     body && `--body="${body}"`,
     draft ? "--draft" : "",
-    // split each arg into its own string
-    ...(rest ?? "").split(" "),
-  ].filter(Boolean);
+    ...extractRestArgs(rest),
+  ].filter((arg): arg is string => Boolean(arg));
 
   await exec("gh", args);
 }
