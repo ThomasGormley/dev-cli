@@ -41,7 +41,7 @@ describe("dev pr create", () => {
     });
 
     const expectedArgStrings: Record<keyof CreateArgs, string> = {
-      title: `--title=${`"${testArgs.title}"` ?? ""}`,
+      title: `--title=${testArgs.title ?? ""}`,
       body: `--body=${testArgs.body ?? ""}`,
       draft: "--draft",
       rest: "-B rest",

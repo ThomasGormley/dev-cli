@@ -40,7 +40,7 @@ export async function createHandler({ title, body, draft, rest }: CreateArgs) {
   const args = [
     "pr",
     "create",
-    title ? `--title="${title}"` : `--title=""`,
+    title ? `--title=${title}` : `--title=""`,
     body && `--body=${body}`,
     draft ? "--draft" : "",
     ...extractRestArgs(rest),
