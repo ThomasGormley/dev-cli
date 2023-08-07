@@ -1,5 +1,12 @@
 # dev-cli
 
+## 0.3.1
+
+### Patch Changes
+
+- 1fc742b: Fix rest parameters
+- ef7438e: puts chaneset in PR body prompt behind feature flag
+
 ## 0.3.0
 
 ### Minor Changes
