@@ -1,5 +1,12 @@
 # dev-cli
 
+## 0.3.2
+
+### Patch Changes
+
+- ba08798: add config directory
+- 102cb49: Include socialcoders to jira regex
+
 ## 0.3.1
 
 ### Patch Changes
