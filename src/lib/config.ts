@@ -1,11 +1,9 @@
-import { lstatSync, readFileSync } from "fs";
+import { lstatSync } from "fs";
 import { mkdir } from "fs/promises";
 import { homedir } from "os";
 import path from "path";
 import XDGAppPaths from "xdg-app-paths";
-import { parse as yamlParse, stringify as yamlStringify } from "yaml";
 import { z } from "zod";
-import fs from "fs";
 import { raise } from "./error";
 import { readYamlFile, writeYamlFile } from "./yaml";
 
