@@ -23,11 +23,13 @@ const featureFlagSchema = z.object({
 
 type FeatureFlags = z.infer<typeof featureFlagSchema>;
 
-export const featureFlagsYml = `${getGlobalPathConfig()}/flags.yml`;
+export const FEATURE_FLAG_FILE_PATH = join(getGlobalPathConfig(), "flags.yml");
+
 export function init() {
-  const flagsYml = join(featureFlagsYml);
   const parsedYaml = featureFlagSchema.parse(
-    existsSync(flagsYml) ? readYamlFile(flagsYml) : {},
+    existsSync(FEATURE_FLAG_FILE_PATH)
+      ? readYamlFile(FEATURE_FLAG_FILE_PATH)
+      : {},
   );
   const featureFlagMap = new Map<
     keyof FeatureFlags,

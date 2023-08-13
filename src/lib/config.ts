@@ -4,7 +4,7 @@ import path from "path";
 import XDGAppPaths from "xdg-app-paths";
 import { z } from "zod";
 import { raise } from "./error";
-import { defaultFeatureFlags, featureFlagsYml } from "./feature-flag";
+import { defaultFeatureFlags, FEATURE_FLAG_FILE_PATH } from "./feature-flag";
 import { readYamlFile, writeYamlFile } from "./yaml";
 
 // Returns whether a directory exists
@@ -78,8 +78,8 @@ export function initConfigDirectory() {
     writeToConfig(defaultConfig);
   }
 
-  if (!existsSync(featureFlagsYml)) {
-    writeYamlFile(featureFlagsYml, defaultFeatureFlags);
+  if (!existsSync(FEATURE_FLAG_FILE_PATH)) {
+    writeYamlFile(FEATURE_FLAG_FILE_PATH, defaultFeatureFlags);
   }
 
   return config;
