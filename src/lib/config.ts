@@ -1,10 +1,10 @@
-import { lstatSync } from "fs";
-import { mkdir } from "fs/promises";
+import { existsSync, lstatSync, mkdirSync } from "fs";
 import { homedir } from "os";
 import path from "path";
 import XDGAppPaths from "xdg-app-paths";
 import { z } from "zod";
 import { raise } from "./error";
+import { defaultFeatureFlags, featureFlagsYml } from "./feature-flag";
 import { readYamlFile, writeYamlFile } from "./yaml";
 
 // Returns whether a directory exists
@@ -26,8 +26,6 @@ export const getGlobalPathConfig = (): string => {
     path.join(homedir(), ".config", "dev-cli"),
   ];
 
-  console.log(possibleConfigPaths);
-
   return (
     possibleConfigPaths.find((configPath) => isDirectory(configPath)) ||
     configDirs[0] ||
@@ -48,32 +46,40 @@ const CliConfigSchema = z.object({
 
 export type CliConfig = z.infer<typeof CliConfigSchema>;
 
-function readConfig() {
+export function readConfig() {
   const config = CliConfigSchema.parse(readYamlFile(CONFIG_FILE_PATH) ?? {});
   return config;
 }
 
 function writeToConfig(config: CliConfig) {
   writeYamlFile(CONFIG_FILE_PATH, config);
-  return readConfig();
 }
 
-export async function initConfigDirectory() {
+function createConfigDirectory() {
   const cliConfigDir = isDirectory(DEV_CLI_DIR);
 
   if (!cliConfigDir) {
-    await mkdir(DEV_CLI_DIR, { recursive: true }).catch((err: unknown) => {
-      throw new Error(
-        `Could not create config directory at ${DEV_CLI_DIR}: ${err}`,
-      );
-    });
+    try {
+      mkdirSync(DEV_CLI_DIR, { recursive: true });
+    } catch (error) {
+      throw new Error(`Could not create config directory: ${DEV_CLI_DIR}`);
+    }
   }
+}
+
+export function initConfigDirectory() {
+  createConfigDirectory();
 
   let config: CliConfig;
   try {
     config = readConfig();
   } catch (err) {
-    config = writeToConfig(defaultConfig);
+    config = defaultConfig;
+    writeToConfig(defaultConfig);
+  }
+
+  if (!existsSync(featureFlagsYml)) {
+    writeYamlFile(featureFlagsYml, defaultFeatureFlags);
   }
 
   return config;

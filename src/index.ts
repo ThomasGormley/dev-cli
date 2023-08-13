@@ -4,7 +4,7 @@ import { cli } from "./cli";
 import { initConfigDirectory } from "./lib/config";
 
 async function main() {
-  await initConfigDirectory();
+  initConfigDirectory();
   await run(cli, process.argv);
 }
 

@@ -1,21 +1,21 @@
 import { join } from "path";
-import { existsSync } from "fs";
-import { PKG_ROOT } from "./internal";
 import { z } from "zod";
 import { readYamlFile } from "./yaml";
+import { existsSync } from "fs";
+import { getGlobalPathConfig } from "./config";
 
 type FlagsOfType<TT extends boolean | string | number, TObj> = {
   [K in keyof TObj]: TObj[K] extends TT ? K : never;
 }[keyof TObj];
 type BooleanFlags<T> = FlagsOfType<boolean, T>;
 
-const defaultValues = {
+export const defaultFeatureFlags = {
   boolean: false,
   string: "",
   number: 0,
 } as const;
 
-const booleanWithDefault = z.boolean().default(defaultValues.boolean);
+const booleanWithDefault = z.boolean().default(defaultFeatureFlags.boolean);
 
 const featureFlagSchema = z.object({
   PromptForChangesListInBody: booleanWithDefault,
@@ -23,12 +23,11 @@ const featureFlagSchema = z.object({
 
 type FeatureFlags = z.infer<typeof featureFlagSchema>;
 
-const flagsYml = join(PKG_ROOT, "flags.yml");
-const flagsYmlExists = existsSync(flagsYml);
-
+export const featureFlagsYml = `${getGlobalPathConfig()}/flags.yml`;
 export function init() {
+  const flagsYml = join(featureFlagsYml);
   const parsedYaml = featureFlagSchema.parse(
-    flagsYmlExists ? readYamlFile(flagsYml) : {},
+    existsSync(flagsYml) ? readYamlFile(flagsYml) : {},
   );
   const featureFlagMap = new Map<
     keyof FeatureFlags,
