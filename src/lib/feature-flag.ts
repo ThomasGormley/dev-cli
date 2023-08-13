@@ -1,8 +1,8 @@
 import { join } from "path";
-import { existsSync, readFileSync } from "fs";
-import { parse as yamlParse } from "yaml";
+import { existsSync } from "fs";
 import { PKG_ROOT } from "./internal";
 import { z } from "zod";
+import { readYamlFile } from "./yaml";
 
 type FlagsOfType<TT extends boolean | string | number, TObj> = {
   [K in keyof TObj]: TObj[K] extends TT ? K : never;
@@ -25,10 +25,11 @@ type FeatureFlags = z.infer<typeof featureFlagSchema>;
 
 const flagsYml = join(PKG_ROOT, "flags.yml");
 const flagsYmlExists = existsSync(flagsYml);
-const flagsYmlBuffer = flagsYmlExists ? readFileSync(flagsYml, "utf8") : "";
 
 export function init() {
-  const parsedYaml = featureFlagSchema.parse(yamlParse(flagsYmlBuffer) ?? {});
+  const parsedYaml = featureFlagSchema.parse(
+    flagsYmlExists ? readYamlFile(flagsYml) : {},
+  );
   const featureFlagMap = new Map<
     keyof FeatureFlags,
     boolean | string | number

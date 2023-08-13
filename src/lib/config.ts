@@ -7,6 +7,7 @@ import { parse as yamlParse, stringify as yamlStringify } from "yaml";
 import { z } from "zod";
 import fs from "fs";
 import { raise } from "./error";
+import { readYamlFile, writeYamlFile } from "./yaml";
 
 // Returns whether a directory exists
 export const isDirectory = (path: string): boolean => {
@@ -50,16 +51,12 @@ const CliConfigSchema = z.object({
 export type CliConfig = z.infer<typeof CliConfigSchema>;
 
 function readConfig() {
-  const buffer = readFileSync(CONFIG_FILE_PATH, "utf8");
-  const parsed = yamlParse(buffer);
-  const config = CliConfigSchema.parse(parsed);
+  const config = CliConfigSchema.parse(readYamlFile(CONFIG_FILE_PATH) ?? {});
   return config;
 }
 
 function writeToConfig(config: CliConfig) {
-  const yaml = yamlStringify(config);
-  fs.writeFileSync(CONFIG_FILE_PATH, yaml);
-
+  writeYamlFile(CONFIG_FILE_PATH, config);
   return readConfig();
 }
 
