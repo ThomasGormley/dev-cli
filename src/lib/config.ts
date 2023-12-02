@@ -42,6 +42,7 @@ const defaultConfig = {
 
 const CliConfigSchema = z.object({
   flagsFile: z.string(),
+  teamBranch: z.string().optional(),
 });
 
 export type CliConfig = z.infer<typeof CliConfigSchema>;
