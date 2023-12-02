@@ -1,6 +1,6 @@
 import { join } from "path";
 import { z } from "zod";
-import { readYamlFile } from "./yaml";
+import { readYamlFile, writeYamlFile } from "./yaml";
 import { existsSync } from "fs";
 import { getGlobalPathConfig } from "./config";
 
@@ -23,9 +23,12 @@ const featureFlagSchema = z.object({
 
 type FeatureFlags = z.infer<typeof featureFlagSchema>;
 
-export const FEATURE_FLAG_FILE_PATH = join(getGlobalPathConfig(), "flags.yml");
-
 export function init() {
+  const FEATURE_FLAG_FILE_PATH = join(getGlobalPathConfig(), "flags.yml");
+
+  if (!existsSync(FEATURE_FLAG_FILE_PATH)) {
+    writeYamlFile(FEATURE_FLAG_FILE_PATH, defaultFeatureFlags);
+  }
   const parsedYaml = featureFlagSchema.parse(
     existsSync(FEATURE_FLAG_FILE_PATH)
       ? readYamlFile(FEATURE_FLAG_FILE_PATH)

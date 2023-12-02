@@ -1,10 +1,9 @@
-import { existsSync, lstatSync, mkdirSync } from "fs";
+import { lstatSync, mkdirSync } from "fs";
 import { homedir } from "os";
 import path from "path";
 import XDGAppPaths from "xdg-app-paths";
 import { z } from "zod";
 import { raise } from "./error";
-import { defaultFeatureFlags, FEATURE_FLAG_FILE_PATH } from "./feature-flag";
 import { readYamlFile, writeYamlFile } from "./yaml";
 
 // Returns whether a directory exists
@@ -38,7 +37,7 @@ const CONFIG_FILE_PATH = path.join(DEV_CLI_DIR, "config.yml");
 
 const defaultConfig = {
   flagsFile: `${DEV_CLI_DIR}/flags.yml`,
-} as const;
+} satisfies Readonly<CliConfig>;
 
 const CliConfigSchema = z.object({
   flagsFile: z.string(),
@@ -49,6 +48,7 @@ export type CliConfig = z.infer<typeof CliConfigSchema>;
 
 export function readConfig() {
   const config = CliConfigSchema.parse(readYamlFile(CONFIG_FILE_PATH) ?? {});
+  console.log({ config });
   return config;
 }
 
@@ -68,7 +68,7 @@ function createConfigDirectory() {
   }
 }
 
-export let config: CliConfig;
+export let config: CliConfig = defaultConfig;
 
 export function initConfigDirectory() {
   createConfigDirectory();
@@ -78,10 +78,6 @@ export function initConfigDirectory() {
   } catch (err) {
     config = defaultConfig;
     writeToConfig(defaultConfig);
-  }
-
-  if (!existsSync(FEATURE_FLAG_FILE_PATH)) {
-    writeYamlFile(FEATURE_FLAG_FILE_PATH, defaultFeatureFlags);
   }
 
   return config;
