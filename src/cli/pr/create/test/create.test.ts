@@ -5,6 +5,7 @@ import { CreateArgs } from "../types";
 import prompts from "prompts";
 import { execa } from "execa";
 import { omit } from "../../../../lib/object-utils";
+import * as config from "../../../../lib/config";
 
 function generateArgs({
   title = undefined,
@@ -21,6 +22,11 @@ function generateArgs({
 }
 
 vi.mock("execa");
+
+const configStub = {
+  flagsFile: "test-flags-file",
+  teamBranch: "test-branch",
+} satisfies config.CliConfig;
 
 describe("dev pr create", () => {
   beforeEach(() => {
@@ -78,6 +84,20 @@ describe("dev pr create", () => {
 
     expect(execa).toHaveBeenCalledWith(
       expect.stringContaining(`--body "${testPullRequestTemplate}"`),
+    );
+  });
+
+  it("should use config.teamBranch as the base branch if it exists", async () => {
+    vi.spyOn(git, "branchExists").mockReturnValue(true);
+    vi.spyOn(config, "config", "get").mockReturnValue(configStub);
+    const testArgs = generateArgs({ title: "title" });
+
+    await createCommand.handler(testArgs);
+
+    expect(execa).toHaveBeenCalledWith(
+      "gh",
+      expect.arrayContaining(["pr", "create", "--base=test-branch"]),
+      expect.anything(),
     );
   });
 });
