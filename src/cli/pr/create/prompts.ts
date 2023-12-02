@@ -1,4 +1,5 @@
 import {
+  getRemoteBranches,
   getTicketFromBranch,
   PULL_REQUEST_TEMPLATE_MD,
 } from "../../../lib/git";
@@ -10,6 +11,7 @@ const promptsSchema = z.object({
   title: z.string(),
   template: z.enum(["template", "blank"]),
   addCommitsAsChanges: z.boolean(),
+  branch: z.string(),
 });
 
 export async function promptTitle() {
@@ -62,4 +64,18 @@ export async function promptAddCommitsAsChanges() {
   );
 
   return response.addCommitsAsChanges;
+}
+
+export async function promptForBranch() {
+  const branches = getRemoteBranches();
+  const choices = branches.map((branch) => ({ title: branch, value: branch }));
+
+  const response = await zompt(promptsSchema.pick({ branch: true }), {
+    name: "branch",
+    type: "autocomplete",
+    choices: choices,
+    message: "Branch",
+  });
+
+  return response.branch;
 }
