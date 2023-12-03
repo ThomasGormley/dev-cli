@@ -93,3 +93,20 @@ export function getTicketFromBranch(branchName = getCurrentBranch()) {
   const remaining = branchName.replace(ticket, "");
   return { ticket, remaining };
 }
+
+export function getRemoteBranches(removeRemote = true) {
+  const { stdout } = execaCommandSync("git branch -r");
+  return stdout.split("\n").map((branch) => {
+    return removeRemote ? branch.trim().replace("origin/", "") : branch.trim();
+  });
+}
+
+export function branchExists(branch: string) {
+  const { stdout: exists } = execaSync("git", [
+    "ls-remote",
+    "--heads",
+    "origin",
+    branch,
+  ]);
+  return Boolean(exists);
+}

@@ -1,8 +1,8 @@
 import { join } from "path";
 import { z } from "zod";
-import { readYamlFile } from "./yaml";
-import { existsSync } from "fs";
-import { getGlobalPathConfig } from "./config";
+import { readYamlFile, writeYamlFile } from "./yaml";
+import { existsSync, mkdirSync } from "fs";
+import { DEV_CLI_DIR, isDirectory } from "./config";
 
 type FlagsOfType<TT extends boolean | string | number, TObj> = {
   [K in keyof TObj]: TObj[K] extends TT ? K : never;
@@ -23,9 +23,28 @@ const featureFlagSchema = z.object({
 
 type FeatureFlags = z.infer<typeof featureFlagSchema>;
 
-export const FEATURE_FLAG_FILE_PATH = join(getGlobalPathConfig(), "flags.yml");
+const FEATURE_FLAG_FILE_PATH = join(DEV_CLI_DIR, "flags.yml");
+
+function createFlagDirectory() {
+  const flagDir = isDirectory(DEV_CLI_DIR);
+
+  if (!flagDir) {
+    try {
+      mkdirSync(DEV_CLI_DIR, { recursive: true });
+    } catch (error) {
+      throw new Error(
+        `Could not create feature flag directory: ${DEV_CLI_DIR}`,
+      );
+    }
+  }
+}
 
 export function init() {
+  createFlagDirectory();
+
+  if (!existsSync(FEATURE_FLAG_FILE_PATH)) {
+    writeYamlFile(FEATURE_FLAG_FILE_PATH, defaultFeatureFlags);
+  }
   const parsedYaml = featureFlagSchema.parse(
     existsSync(FEATURE_FLAG_FILE_PATH)
       ? readYamlFile(FEATURE_FLAG_FILE_PATH)

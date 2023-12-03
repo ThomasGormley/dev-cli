@@ -1,6 +1,8 @@
+import { config } from "../../../lib/config";
 import { exec } from "../../../lib/exec";
 import { isWorkstationRepo } from "../../../lib/firstup";
 import {
+  branchExists,
   getPullRequestTemplateString,
   isAuthenticated,
   isDirGitRepo,
@@ -8,7 +10,11 @@ import {
 import { applyTransformationsToString } from "../../../lib/string";
 import { defaultPrTemplate } from "./lib/constants";
 import { getFirstupTemplateTransformations } from "./lib/transformations";
-import { promptAddCommitsAsChanges, promptTitle } from "./prompts";
+import {
+  promptAddCommitsAsChanges,
+  promptForBranch,
+  promptTitle,
+} from "./prompts";
 import { CreateArgs } from "./types";
 
 function extractRestArgs(rest: string[]): string[] {
@@ -37,12 +43,23 @@ export async function createHandler({ title, body, draft, rest }: CreateArgs) {
     body = await handleBody();
   }
 
+  let branch = config.teamBranch;
+  const branchExistsOnRemote = branch ? branchExists(branch) : false;
+
+  if (branch && !branchExistsOnRemote) {
+    // Only prompt for branch if the config branch doesn't exist on remote
+    console.log(`Branch "${branch}" does not exist on remote.`);
+    console.log("Please choose another branch to open the PR against.");
+    branch = await handleBranch();
+  }
+
   const args = [
     "pr",
     "create",
     title ? `--title=${title}` : `--title=""`,
     body && `--body=${body}`,
     draft ? "--draft" : "",
+    branch && `--base=${branch}`,
     ...extractRestArgs(rest),
   ].filter((arg): arg is string => Boolean(arg));
 
@@ -59,6 +76,10 @@ async function handleBody() {
   }
 
   return undefined;
+}
+
+async function handleBranch() {
+  return promptForBranch();
 }
 
 async function handleFirstupTemplate() {
