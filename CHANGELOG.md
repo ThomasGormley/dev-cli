@@ -1,5 +1,11 @@
 # dev-cli
 
+## 0.4.0
+
+### Minor Changes
+
+- 5279dfd: Check for `teamBranch` in config & use it for `pr create`
+
 ## 0.3.2
 
 ### Patch Changes
