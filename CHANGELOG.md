@@ -1,5 +1,11 @@
 # dev-cli
 
+## 0.4.1
+
+### Patch Changes
+
+- 1698cc8: Removes debug log
+
 ## 0.4.0
 
 ### Minor Changes
