@@ -45,7 +45,6 @@ export type CliConfig = z.infer<typeof CliConfigSchema>;
 
 export function readConfig() {
   const config = CliConfigSchema.parse(readYamlFile(CONFIG_FILE_PATH) ?? {});
-  console.log({ config });
   return config;
 }
 
