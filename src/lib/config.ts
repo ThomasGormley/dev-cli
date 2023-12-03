@@ -32,15 +32,12 @@ export function getGlobalPathConfig() {
   );
 }
 
-const DEV_CLI_DIR = getGlobalPathConfig();
+export const DEV_CLI_DIR = getGlobalPathConfig();
 const CONFIG_FILE_PATH = path.join(DEV_CLI_DIR, "config.yml");
 
-const defaultConfig = {
-  flagsFile: `${DEV_CLI_DIR}/flags.yml`,
-} satisfies Readonly<CliConfig>;
+const defaultConfig = {} satisfies Readonly<CliConfig>;
 
 const CliConfigSchema = z.object({
-  flagsFile: z.string(),
   teamBranch: z.string().optional(),
 });
 
