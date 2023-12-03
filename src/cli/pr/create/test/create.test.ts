@@ -24,7 +24,6 @@ function generateArgs({
 vi.mock("execa");
 
 const configStub = {
-  flagsFile: "test-flags-file",
   teamBranch: "test-branch",
 } satisfies config.CliConfig;
 
