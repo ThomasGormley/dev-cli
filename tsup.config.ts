@@ -12,5 +12,5 @@ export default defineConfig({
   sourcemap: true,
   target: "esnext",
   outDir: "dist",
-  onSuccess: isDev ? "node dist/index.js && npm link" : undefined,
+  onSuccess: isDev ? 'echo "Build success... Linking" && npm link' : undefined,
 });

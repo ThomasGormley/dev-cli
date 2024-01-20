@@ -46,8 +46,13 @@ export async function createHandler({ title, body, draft, rest }: CreateArgs) {
   let branch = config.teamBranch;
   const branchExistsOnRemote = branch ? branchExists(branch) : false;
 
-  if (branch && !branchExistsOnRemote) {
-    // Only prompt for branch if the config branch doesn't exist on remote
+  const argsHasBaseBranchFlag = rest.some(
+    (arg) => arg.startsWith("--base") || arg.startsWith("-B"),
+  );
+
+  // Only prompt for branch if the config branch doesn't exist on remote
+  // and the user didn't provide a branch as an argument
+  if (branch && !branchExistsOnRemote && !argsHasBaseBranchFlag) {
     console.log(`Branch "${branch}" does not exist on remote.`);
     console.log("Please choose another branch to open the PR against.");
     branch = await handleBranch();
