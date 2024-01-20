@@ -3,7 +3,9 @@ import { exec } from "../../../lib/exec";
 import { isWorkstationRepo } from "../../../lib/firstup";
 import {
   branchExists,
+  getCurrentBranch,
   getPullRequestTemplateString,
+  getTicketFromBranch,
   isAuthenticated,
   isDirGitRepo,
 } from "../../../lib/git";
@@ -88,7 +90,9 @@ async function handleBranch() {
 }
 
 async function handleFirstupTemplate() {
-  const template = getPullRequestTemplateString() || defaultPrTemplate;
+  const { ticket } = getTicketFromBranch();
+  const template =
+    getPullRequestTemplateString() || defaultPrTemplate(ticket || undefined);
   console.log("Using default PR template");
   const addCommitsAsChanges = await promptAddCommitsAsChanges();
   const transformedTemplate = applyTransformationsToString(

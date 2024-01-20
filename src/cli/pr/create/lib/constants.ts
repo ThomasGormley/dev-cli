@@ -1,4 +1,4 @@
-export const defaultPrTemplate = `**Issue**
-https://firstup-io.atlassian.net/browse/FE-
+export const defaultPrTemplate = (ticket = "FE-") => `**Issue**
+https://firstup-io.atlassian.net/browse/${ticket}
 
 **Changes**`;
